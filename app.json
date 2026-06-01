@@ -4,16 +4,20 @@
 		"slug": "cos-share",
 		"version": "1.0.0",
 		"orientation": "portrait",
-		"icon": "./assets/cos.svg",
+		"icon": "./assets/splash-icon.png",
 		"scheme": "cos",
 		"userInterfaceStyle": "dark",
 		"android": {
 			"predictiveBackGestureEnabled": false,
-			"package": "lt.tsx.cos"
+			"package": "lt.tsx.cos",
+			"adaptiveIcon": {
+				"foregroundImage": "./assets/adaptive-icon.png",
+				"backgroundColor": "#000000"
+			}
 		},
 		"web": {
 			"output": "single",
-			"favicon": "./assets/cos.svg"
+			"favicon": "./assets/favicon.png"
 		},
 		"plugins": [
 			[
@@ -31,8 +35,10 @@
 				{
 					"backgroundColor": "#000000",
 					"android": {
-						"image": "./assets/images/splash-icon.png",
-						"imageWidth": 76
+						"image": "./assets/splash.png",
+						"resizeMode": "contain",
+						"backgroundColor": "#000000",
+						"imageWidth": 578
 					}
 				}
 			],
