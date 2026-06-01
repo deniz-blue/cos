@@ -10,8 +10,6 @@ import {
 import { Box, Flex } from "../components/layouting";
 import { queryClient } from "../lib/query-client";
 
-// SplashScreen.preventAutoHideAsync();
-
 if (Platform.OS === 'web') {
 	const fontStyles = `
     @font-face {
@@ -27,20 +25,6 @@ if (Platform.OS === 'web') {
 }
 
 export default function RootLayout() {
-	// const [loaded, error] = useFonts({
-	// 	...MaterialCommunityIcons.font,
-	// });
-
-	// useEffect(() => {
-	// 	if (loaded || error) {
-	// 		SplashScreen.hideAsync();
-	// 	}
-	// }, [loaded, error]);
-
-	// if (!loaded && !error) {
-	// 	return null;
-	// }
-
 	return (
 		<QueryClientProvider client={queryClient}>
 			<PaperProvider

@@ -41,14 +41,6 @@
 						"imageWidth": 578
 					}
 				}
-			],
-			[
-				"expo-font",
-				{
-					"fonts": [
-						"./node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"
-					]
-				}
 			]
 		],
 		"experiments": {

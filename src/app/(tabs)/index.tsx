@@ -3,7 +3,7 @@ import { Dimensions, ScrollView } from "react-native";
 import { ActivityIndicator, Button, FAB, Text, useTheme } from "react-native-paper";
 import QRCode from "react-qr-code";
 import { Box, Flex } from "../../components/layouting";
-import { isEmptyPayload, serializePayload } from "../../lib/payload";
+import { createPayload, isEmptyPayload, serializePayload } from "../../lib/payload";
 import { useProfileQuery } from "../../lib/useProfileQuery";
 
 export default function QrPage() {
@@ -11,7 +11,7 @@ export default function QrPage() {
 	const router = useRouter();
 	const profile = useProfileQuery();
 
-	const qrcode = profile.data ? serializePayload(profile.data) : "";
+	const qrcode = serializePayload(profile.data ?? createPayload());
 
 	return (
 		<ScrollView>
