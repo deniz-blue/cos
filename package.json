@@ -41,7 +41,8 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "url-loader": "^4.1.1"
   },
   "scripts": {
     "start": "expo start",
