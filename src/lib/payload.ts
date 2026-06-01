@@ -30,7 +30,7 @@ export const parsePayload = (data: string): Payload => {
 };
 
 export const isEmptyPayload = (payload: Payload): boolean => {
-	return !payload.name && Object.values(payload.socials).every(v => !v) && !payload.details;
+	return !payload.name.trim() && (Object.values(payload.socials).map(v => v.trim()).filter(Boolean).length === 0) && !payload.details.trim();
 };
 
 export const serializePayload = (payload: Payload): string => {

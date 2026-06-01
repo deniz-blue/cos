@@ -1,4 +1,4 @@
-import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useState } from "react";
 import { FlatList, ScrollView } from "react-native";
 import { ActivityIndicator, Text, TouchableRipple, useTheme } from "react-native-paper";
@@ -86,7 +86,7 @@ export const ListItemCard = ({ item }: { item: ListItem }) => {
 							{date}
 						</Text>
 						<Flex direction="row" gap="xs" align="center">
-							<MaterialDesignIcons name={expanded ? "chevron-up" : "chevron-down"} size={18} color={theme.colors.onSurfaceVariant} />
+							<MaterialCommunityIcons name={expanded ? "chevron-up" : "chevron-down"} size={18} color={theme.colors.onSurfaceVariant} />
 							<Flex direction="column" gap={0}>
 								<Text variant="titleMedium">
 									{item.payload.name}
@@ -112,7 +112,7 @@ export const ListItemCard = ({ item }: { item: ListItem }) => {
 					{!!item.note && (
 						<Flex direction="column" gap={0}>
 							<Flex direction="row" gap="xs" align="center">
-								<MaterialDesignIcons name="note-outline" size={18} color={theme.colors.onSurfaceVariant} />
+								<MaterialCommunityIcons name="note-outline" size={18} color={theme.colors.onSurfaceVariant} />
 								<Text variant="labelMedium" style={{ color: theme.colors.onSurfaceVariant }}>
 									Note
 								</Text>

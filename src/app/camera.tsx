@@ -1,4 +1,4 @@
-import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { BarcodeScanningResult, Camera, CameraView } from "expo-camera";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -173,7 +173,7 @@ export default function CameraScreen() {
 										>
 											<Flex direction="row" align="center" justify="space-between" p="xs" px="md">
 												<Flex direction="row" gap="xs" align="center">
-													<MaterialDesignIcons name="check" size={24} color={theme.colors.primary} />
+													<MaterialCommunityIcons name="check" size={24} color={theme.colors.primary} />
 													<Text>
 														{message.payload.name}
 													</Text>
