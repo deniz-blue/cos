@@ -1,7 +1,9 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import { useFonts } from "expo-font";
+import { SplashScreen, Stack } from "expo-router";
 import { DarkTheme, ThemeProvider } from "expo-router/react-navigation";
+import { useEffect } from "react";
 import { Platform } from "react-native";
 import {
 	MD3DarkTheme,
@@ -10,7 +12,23 @@ import {
 import { Box, Flex } from "../components/layouting";
 import { queryClient } from "../lib/query-client";
 
+SplashScreen.preventAutoHideAsync();
+
 export default function RootLayout() {
+	const [loaded, error] = useFonts({
+		...MaterialCommunityIcons.font,
+	});
+
+	useEffect(() => {
+		if (loaded || error) {
+			SplashScreen.hideAsync();
+		}
+	}, [loaded, error]);
+
+	if (!loaded && !error) {
+		return null;
+	}
+
 	return (
 		<QueryClientProvider client={queryClient}>
 			<PaperProvider
