@@ -37,6 +37,7 @@ export default function QrPage() {
 
 			<FlatList
 				data={flat}
+
 				keyExtractor={(item) => item.id.toString()}
 				contentContainerStyle={{ padding: 16, gap: 12 }}
 				renderItem={({ item }) => (
@@ -46,6 +47,18 @@ export default function QrPage() {
 					if (query.hasNextPage && !query.isFetchingNextPage) query.fetchNextPage();
 				}}
 				onEndReachedThreshold={0.5}
+
+				ListEmptyComponent={() => (
+					<Flex direction="column" align="center" justify="center" w="100%" h="100%" gap="md">
+						<Text variant="titleMedium">
+							No profiles scanned yet
+						</Text>
+						<Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
+							Start scanning QR codes to see profiles here
+						</Text>
+					</Flex>
+				)}
+
 				ListFooterComponent={(
 					query.isFetchingNextPage ? (
 						<ActivityIndicator animating={true} style={{ marginVertical: 16 }} />

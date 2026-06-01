@@ -1,5 +1,5 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useMutation } from "@tanstack/react-query";
-import { database } from "./db";
 import { serializePayload } from "./payload";
 import { queryClient } from "./query-client";
 import { ListItem } from "./useListQuery";
@@ -7,54 +7,52 @@ import { ListItem } from "./useListQuery";
 export interface NewListItem extends Omit<ListItem, "id" | "created_at"> { };
 export interface UpdateListItem extends Pick<ListItem, "id">, Partial<Omit<ListItem, "id" | "created_at">> { };
 
-export const addToList = async (item: NewListItem): Promise<number | null> => {
-	const db = await database();
+export const getAll = async (): Promise<ListItem[]> => {
+	const result = await AsyncStorage.getItem("list") || "[]";
+	return JSON.parse(result) as ListItem[];
+};
 
-	const payloadExists = await db.getFirstAsync(
-		"SELECT id FROM list WHERE payload = ?;",
-		[serializePayload(item.payload)]
-	);
+export const addToList = async (item: NewListItem): Promise<string | null> => {
+	const all = await getAll();
+
+	const payloadExists = all.some(existingItem => serializePayload(existingItem.payload) === serializePayload(item.payload));
 
 	if (payloadExists) return null;
 
-	const result = await db.runAsync(
-		"INSERT INTO list (payload, note, created_at) VALUES (?, ?, ?);",
-		[serializePayload(item.payload), item.note, Date.now()]
-	);
+	let next: ListItem = {
+		...item,
+		id: crypto.randomUUID(),
+		created_at: Date.now(),
+	};
 
-	return result.lastInsertRowId;
+	await AsyncStorage.setItem("list", JSON.stringify([next, ...all]));
+
+	return next.id;
 };
 
 export const updateListItem = async (item: UpdateListItem): Promise<void> => {
-	const fieldsToUpdate = [];
-	const values = [];
+	const all = await getAll();
+	const index = all.findIndex(existingItem => existingItem.id === item.id);
+	if (index === -1) throw new Error("Item not found");
 
-	if (item.payload) {
-		fieldsToUpdate.push("payload = ?");
-		values.push(serializePayload(item.payload));
-	}
+	const updatedItem = {
+		...all[index],
+		...item,
+	};
 
-	if (item.note) {
-		fieldsToUpdate.push("note = ?");
-		values.push(item.note);
-	}
-
-	if (fieldsToUpdate.length === 0) return;
-
-	values.push(item.id);
-
-	const query = `UPDATE list SET ${fieldsToUpdate.join(", ")} WHERE id = ?;`;
-
-	await (await database()).runAsync(query, values);
+	all[index] = updatedItem;
+	await AsyncStorage.setItem("list", JSON.stringify(all));
 };
 
-export const deleteListItem = async (id: number): Promise<void> => {
-	await (await database()).runAsync("DELETE FROM list WHERE id = ?;", [id]);
+export const deleteListItem = async (id: string): Promise<void> => {
+	const all = await getAll();
+	const updatedList = all.filter(item => item.id !== id);
+	await AsyncStorage.setItem("list", JSON.stringify(updatedList));
 };
 
 export const useListMutation = () => {
 	return useMutation({
-		mutationFn: async (data: { type: "add"; item: NewListItem } | { type: "update"; item: UpdateListItem } | { type: "delete"; id: number }) => {
+		mutationFn: async (data: { type: "add"; item: NewListItem } | { type: "update"; item: UpdateListItem } | { type: "delete"; id: string }) => {
 			switch (data.type) {
 				case "add":
 					return await addToList(data.item);

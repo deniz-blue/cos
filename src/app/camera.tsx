@@ -13,7 +13,7 @@ export const useScanner = () => {
 	const mut = useListMutation();
 	const [error, setError] = useState<string | null>(null);
 	const [messages, setMessages] = useState<{
-		id: number;
+		id: string;
 		payload: Payload;
 	}[]>([]);
 
@@ -42,7 +42,7 @@ export const useScanner = () => {
 		}
 	};
 
-	const dismissMessage = (id: number) => {
+	const dismissMessage = (id: string) => {
 		setMessages(messages => messages.filter(m => m.id !== id));
 	};
 
