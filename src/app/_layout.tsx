@@ -2,6 +2,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { DarkTheme, ThemeProvider } from "expo-router/react-navigation";
+import React from "react";
 import { Platform } from "react-native";
 import {
 	MD3DarkTheme,
@@ -9,6 +10,23 @@ import {
 } from "react-native-paper";
 import { Box, Flex } from "../components/layouting";
 import { queryClient } from "../lib/query-client";
+
+// On web, pre-inject a @font-face for Material Community Icons so that
+// @expo/vector-icons sees it as already loaded (via Font.isLoaded())
+// and skips its own Font.loadAsync() call. This avoids the font sanitizer
+// rejection that happens when the font is served from the auto-generated
+// /assets/node_modules/.pnpm/... path on Cloudflare.
+if (Platform.OS === 'web' && typeof document !== 'undefined') {
+	const style = document.createElement('style');
+	style.textContent = `
+		@font-face {
+			font-family: "material-community";
+			src: url("/fonts/MaterialCommunityIcons.ttf") format("truetype");
+			font-display: swap;
+		}
+	`;
+	document.head.appendChild(style);
+}
 
 export default function RootLayout() {
 	return (
