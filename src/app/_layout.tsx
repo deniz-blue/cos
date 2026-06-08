@@ -10,20 +10,6 @@ import {
 import { Box, Flex } from "../components/layouting";
 import { queryClient } from "../lib/query-client";
 
-if (Platform.OS === 'web') {
-	const fontStyles = `
-    @font-face {
-      font-family: 'material-community';
-      src: url('/fonts/MaterialCommunityIcons.ttf') format('truetype');
-      font-display: swap;
-    }
-  `;
-
-	const style = document.createElement('style');
-	style.innerHTML = fontStyles;
-	document.head.appendChild(style);
-}
-
 export default function RootLayout() {
 	return (
 		<QueryClientProvider client={queryClient}>
