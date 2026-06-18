@@ -2,7 +2,8 @@ import { IconAlertCircle, IconArrowLeft, IconCheck, IconInfoCircle, IconPencil }
 import { BarcodeScanningResult, Camera, CameraView } from "expo-camera";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, Vibration } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeInDown, FadeOutDown, LinearTransition } from "react-native-reanimated";
 import { Box } from "../components/base/Box";
 import { Button } from "../components/base/Button";
@@ -48,6 +49,7 @@ const messageText = (message: QueueMessage) => {
 };
 
 export default function CameraScreen() {
+	const insets = useSafeAreaInsets();
 	const router = useRouter();
 	const queue = useMessageQueue();
 	const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -70,7 +72,10 @@ export default function CameraScreen() {
 	const onScan = useCallback(async (res: BarcodeScanningResult) => {
 		const result = await handleScan(res);
 
-		if (result.type === "added" || result.type === "exists") {
+		if (result.type === "added") {
+			Vibration.vibrate(50);
+			queue.pushScan(result.payload, result.type, result.id);
+		} else if (result.type === "exists") {
 			queue.pushScan(result.payload, result.type, result.id);
 		} else {
 			queue.pushError("Failed to parse QR code data");
@@ -132,10 +137,11 @@ export default function CameraScreen() {
 				w="100%"
 				h="100%"
 				p="xs"
-				pb="md"
+				pb={0}
 				gap="md"
 				justify="flex-end"
 				align="center"
+				style={{ paddingBottom: insets.bottom + 16 }}
 			>
 				<Box w="100%" pointerEvents="box-none">
 					<ScrollView

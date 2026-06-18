@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useMutation } from "@tanstack/react-query";
 import { serializePayload } from "./payload";
+import { uid } from "./uid";
 import { queryClient } from "./query-client";
 import { ListItem } from "./useListQuery";
 
@@ -23,7 +24,7 @@ export const addToList = async (item: NewListItem): Promise<AddResult> => {
 
 	const next: ListItem = {
 		...item,
-		id: crypto.randomUUID(),
+		id: uid(),
 		created_at: Date.now(),
 	};
 

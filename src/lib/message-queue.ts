@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Payload } from "./payload";
+import { uid } from "./uid";
 
 export type ScanMessage = {
 	id: string;
@@ -45,7 +46,7 @@ export const useMessageQueue = () => {
 
 	const pushScan = useCallback((payload: Payload, type: ScanMessage["type"], itemId: string) => {
 		const payloadKey = JSON.stringify(payload);
-		const id = crypto.randomUUID();
+		const id = uid();
 
 		setMessages(prev => {
 			const existing = prev.find(msg =>
@@ -65,7 +66,7 @@ export const useMessageQueue = () => {
 	}, [scheduleDismiss, resetTimer]);
 
 	const pushError = useCallback((text: string) => {
-		const id = crypto.randomUUID();
+		const id = uid();
 
 		setMessages(prev => {
 			const existing = prev.find(msg =>

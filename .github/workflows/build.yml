@@ -1,0 +1,46 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: recent
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build APK
+        run: |
+          # GitHub runners have Android SDK at this path
+          echo "sdk.dir=$ANDROID_HOME" > android/local.properties
+          cd android
+          ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cos-apk
+          path: android/app/build/outputs/apk/release/*.apk

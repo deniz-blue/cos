@@ -2,11 +2,14 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { DarkTheme, ThemeProvider } from "expo-router/react-navigation";
 import { Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Box } from "../components/base/Box";
 import { Colors } from "../theme/colors";
 import { queryClient } from "../lib/query-client";
 
 export default function RootLayout() {
+	const insets = useSafeAreaInsets();
+
 	return (
 		<QueryClientProvider client={queryClient}>
 			<ThemeProvider value={DarkTheme}>
@@ -29,10 +32,11 @@ export default function RootLayout() {
 						style={{
 							width: "100%",
 							height: "100%",
+							paddingTop: insets.top,
+							backgroundColor: Colors.Background,
 							...Platform.select({
 								web: {
 									maxWidth: 480,
-									backgroundColor: Colors.Background,
 									overflow: "hidden",
 								},
 							}),

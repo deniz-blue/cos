@@ -1,5 +1,5 @@
 import type { TextStyle } from "react-native";
-import { TextProps as RNTextProps, Text as RNText } from "react-native";
+import { Text as RNText, TextProps as RNTextProps } from "react-native";
 import { Colors, getThemeColor, type ThemeColor } from "../../theme/colors";
 import { FontSize } from "../../theme/sizing";
 
@@ -27,6 +27,8 @@ export const Text = (props: TextProps) => {
 		style,
 		...rest
 	} = props;
+
+	if (!rest.children) return null;
 
 	return (
 		<RNText

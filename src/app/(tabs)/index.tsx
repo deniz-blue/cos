@@ -1,6 +1,7 @@
 import { IconPencil, IconZoomScan } from "@tabler/icons-react-native";
 import { useRouter } from "expo-router";
-import { Dimensions, ScrollView } from "react-native";
+import { useState } from "react";
+import { Dimensions, LayoutChangeEvent, ScrollView } from "react-native";
 import QRCode from "react-qr-code";
 import { Box } from "../../components/base/Box";
 import { Button } from "../../components/base/Button";
@@ -15,6 +16,9 @@ import { FontSize } from "../../theme/sizing";
 export default function QrPage() {
 	const router = useRouter();
 	const profile = useProfileQuery();
+	const [qrSize, setQrSize] = useState(0);
+
+	const onQrLayout = (e: LayoutChangeEvent) => setQrSize(e.nativeEvent.layout.width - 48);
 
 	const qrcode = serializePayload(profile.data ?? createPayload());
 	const hasData = profile.data && !isEmptyPayload(profile.data);
@@ -30,18 +34,21 @@ export default function QrPage() {
 					</Text>
 
 					<Box
+						onLayout={onQrLayout}
 						style={{ width: "100%", aspectRatio: 1, position: "relative", borderRadius: 8, overflow: "hidden" }}
 					>
 						<Box
 							p="lg"
 							w="100%"
 							h="100%"
-							style={{ backgroundColor: "#ffffff" }}
+							style={{ backgroundColor: "#ffffff", alignItems: "center", justifyContent: "center" }}
 						>
-							<QRCode
-								value={qrcode}
-								style={{ width: "100%", height: "100%" }}
-							/>
+							{qrSize > 0 && (
+								<QRCode
+									value={qrcode}
+									size={qrSize}
+								/>
+							)}
 						</Box>
 
 						{profile.isPending && (
