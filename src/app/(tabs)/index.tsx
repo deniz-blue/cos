@@ -1,99 +1,114 @@
+import { IconPencil, IconZoomScan } from "@tabler/icons-react-native";
 import { useRouter } from "expo-router";
 import { Dimensions, ScrollView } from "react-native";
-import { ActivityIndicator, Button, FAB, Text, useTheme } from "react-native-paper";
 import QRCode from "react-qr-code";
-import { Box, Flex } from "../../components/layouting";
+import { Box } from "../../components/base/Box";
+import { Button } from "../../components/base/Button";
+import { Fab } from "../../components/base/Fab";
+import { Loader } from "../../components/base/Loader";
+import { Text } from "../../components/base/Text";
 import { createPayload, isEmptyPayload, serializePayload } from "../../lib/payload";
 import { useProfileQuery } from "../../lib/useProfileQuery";
+import { Colors } from "../../theme/colors";
+import { FontSize } from "../../theme/sizing";
 
 export default function QrPage() {
-	const theme = useTheme();
 	const router = useRouter();
 	const profile = useProfileQuery();
 
 	const qrcode = serializePayload(profile.data ?? createPayload());
+	const hasData = profile.data && !isEmptyPayload(profile.data);
+
+	console.log("[home] profile.data:", profile.data, "isEmpty:", profile.data && isEmptyPayload(profile.data), "hasData:", hasData);
 
 	return (
-		<ScrollView>
-			<Flex direction="column" align="center" justify="center" px="md" py="xl" gap="xl" style={{ minHeight: Dimensions.get("window").height - 64 - 16 }}>
-				<Box
-					style={{ width: "100%", aspectRatio: 1, position: "relative", borderRadius: theme.roundness }}
-				>
+		<Box w="100%" h="100%">
+			<ScrollView contentContainerStyle={{ minHeight: Dimensions.get("window").height - 64 - 16 }}>
+				<Box direction="column" align="center" justify="center" px="md" py="xl" gap="md">
+					<Text fw="600" ta="center">
+						Your QR Code
+					</Text>
+
 					<Box
-						p="lg"
-						w="100%"
-						h="100%"
-						style={{ backgroundColor: "#ffffff", borderRadius: theme.roundness }}
+						style={{ width: "100%", aspectRatio: 1, position: "relative", borderRadius: 8, overflow: "hidden" }}
 					>
-						<QRCode
-							value={qrcode}
-							style={{ width: "100%", height: "100%" }}
-						/>
-					</Box>
-					<Flex
-						align="center"
-						justify="center"
-						w="100%"
-						h="100%"
-						style={{
-							position: "absolute",
-							top: 0,
-							left: 0,
-							borderRadius: theme.roundness,
-							opacity: profile.isPending ? 1 : 0,
-						}}
-					>
-						<ActivityIndicator size={64} />
-					</Flex>
-					{profile.data && isEmptyPayload(profile.data) && (
-						<Flex
-							align="center"
-							justify="center"
+						<Box
+							p="lg"
 							w="100%"
 							h="100%"
-							p="md"
-							style={{ position: "absolute", top: 0, left: 0, backgroundColor: theme.colors.surface, borderRadius: theme.roundness }}
+							style={{ backgroundColor: "#ffffff" }}
 						>
-							<Text variant="titleMedium" style={{ color: theme.colors.onSurfaceVariant, textAlign: "center" }}>
-								You don't have details!
-							</Text>
-						</Flex>
+							<QRCode
+								value={qrcode}
+								style={{ width: "100%", height: "100%" }}
+							/>
+						</Box>
+
+						{profile.isPending && (
+							<Box
+								align="center"
+								justify="center"
+								w="100%"
+								h="100%"
+								style={{ position: "absolute", top: 0, left: 0 }}
+							>
+								<Loader />
+							</Box>
+						)}
+
+						{!profile.isPending && !hasData && (
+							<Box
+								align="center"
+								justify="center"
+								w="100%"
+								h="100%"
+								p="md"
+								style={{ position: "absolute", top: 0, left: 0, backgroundColor: Colors.Background }}
+							>
+								<Text fz={16} fw="500" c={Colors.TextDimmed} ta="center">
+									You don't have details!
+								</Text>
+							</Box>
+						)}
+					</Box>
+
+					{!profile.isPending && (
+						<Box direction="column" align="center" justify="center" gap="md">
+							{hasData && (
+								<Box gap={0} align="center" justify="center" direction="column">
+									<Text fz={24}>{profile.data?.name ?? ""}</Text>
+									<Text fz={18}>{profile.data?.details ?? ""}</Text>
+								</Box>
+							)}
+							<Button
+								variant="primary"
+								leftSection={<IconPencil size={18} color={Colors.White} />}
+								onPress={() => router.push("/(tabs)/profile")}
+							>
+								{hasData ? "Edit details" : "Add details"}
+							</Button>
+						</Box>
 					)}
+
+					<Box mih={48} align="center" justify="center">
+						<Text fz={FontSize.sm} c={Colors.TextDimmed} ta="center">
+							Share contacts with other cosplayers.
+							{"\n"}
+							Sharing is done via QR codes; works offline.
+							{"\n"}
+							Scanned profiles get saved to your history immediately.
+							{"\n"}
+							You can add notes to them and view them later.
+						</Text>
+					</Box>
 				</Box>
+			</ScrollView>
 
-				<Flex direction="column" align="center" justify="center" gap="md">
-					<Flex gap={0} align="center" justify="center" direction="column">
-						<Text variant="titleLarge">
-							{profile.data?.name ?? ""}
-						</Text>
-						<Text variant="titleMedium">
-							{profile.data?.details ?? ""}
-						</Text>
-					</Flex>
-					<Button
-						mode="contained-tonal"
-						icon="pencil"
-						onPress={() => router.push("/(tabs)/profile")}
-					>
-						Edit details
-					</Button>
-				</Flex>
-
-				<FAB
-					icon="qrcode-scan"
-					label="Scan QR Code"
-					onPress={() => router.push("/camera")}
-					style={{ position: "absolute", bottom: 16, right: 16 }}
-				/>
-
-				{/* <Button
-					mode="contained"
-					onPress={() => router.push("/camera")}
-					icon="qrcode-scan"
-				>
-					Scan QR Code
-				</Button> */}
-			</Flex>
-		</ScrollView>
-	)
+			<Fab
+				icon={<IconZoomScan size={28} color={Colors.White} />}
+				label="Scan QR Code"
+				onPress={() => router.push("/camera")}
+			/>
+		</Box>
+	);
 }

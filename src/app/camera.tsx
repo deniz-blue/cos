@@ -1,65 +1,81 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { IconAlertCircle, IconArrowLeft, IconCheck, IconInfoCircle, IconPencil } from "@tabler/icons-react-native";
 import { BarcodeScanningResult, Camera, CameraView } from "expo-camera";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ScrollView } from "react-native";
-import { ActivityIndicator, Button, Card, ProgressBar, Snackbar, Text, useTheme } from "react-native-paper";
 import Animated, { FadeInDown, FadeOutDown, LinearTransition } from "react-native-reanimated";
-import { Box, Flex } from "../components/layouting";
-import { parsePayload, Payload } from "../lib/payload";
+import { Box } from "../components/base/Box";
+import { Button } from "../components/base/Button";
+import { Card } from "../components/base/Card";
+import { Loader } from "../components/base/Loader";
+import { Modal } from "../components/base/Modal";
+import { ProgressBar } from "../components/base/ProgressBar";
+import { Text } from "../components/base/Text";
+import { TextInput } from "../components/base/TextInput";
+import type { QueueMessage } from "../lib/message-queue";
+import { useMessageQueue } from "../lib/message-queue";
+import { parsePayload } from "../lib/payload";
 import { useListMutation } from "../lib/useListMutation";
+import { useListQuery } from "../lib/useListQuery";
+import { Colors } from "../theme/colors";
+import { IconSize } from "../theme/sizing";
 
-export const useScanner = () => {
-	const mut = useListMutation();
-	const [error, setError] = useState<string | null>(null);
-	const [messages, setMessages] = useState<{
-		id: string;
-		payload: Payload;
-	}[]>([]);
+const iconForType = (type: QueueMessage["type"]) => {
+	switch (type) {
+		case "added":
+			return <IconCheck size={24} color={Colors.Primary} />;
+		case "exists":
+			return <IconInfoCircle size={24} color={Colors.Primary} />;
+		case "error":
+			return <IconAlertCircle size={24} color={Colors.Red} />;
+	}
+};
 
-	const TIMEOUT = 3000;
-	const createMessage = (message: typeof messages[0]) => {
-		setMessages(m => [...m, message]);
-		setTimeout(() => {
-			setMessages(m => m.filter(m => m.id !== message.id));
-		}, TIMEOUT);
-	};
+const labelForType = (type: QueueMessage["type"]) => {
+	switch (type) {
+		case "added":
+			return "Scanned";
+		case "exists":
+			return "Exists:";
+		case "error":
+			return "Error";
+	}
+};
 
-	// useEffect(() => createMessage({ id: Date.now(), payload: { name: "John Doe", socials: { t: "johndoe" }, details: "e" } }), []);
-
-	const handleScan = async (res: BarcodeScanningResult) => {
-		try {
-			const data = parsePayload(res.data);
-			console.log("Scanned data:", data);
-			const id = await mut.mutateAsync({ type: "add", item: { payload: data, note: "" } });
-			if (!id) return;
-			console.log("Added to list with ID:", id);
-			createMessage({ id, payload: data });
-		} catch (e) {
-			console.log("Failed to parse QR code data", e);
-			setError("Failed to parse QR code data");
-			return;
-		}
-	};
-
-	const dismissMessage = (id: string) => {
-		setMessages(messages => messages.filter(m => m.id !== id));
-	};
-
-	return {
-		handleScan,
-		error,
-		setError,
-		messages,
-		dismissMessage,
-	};
+const messageText = (message: QueueMessage) => {
+	if (message.type === "error") return message.text;
+	return message.payload.name;
 };
 
 export default function CameraScreen() {
-	const theme = useTheme();
 	const router = useRouter();
-	const { handleScan, error, setError, messages, dismissMessage } = useScanner();
+	const queue = useMessageQueue();
 	const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+	const [noteItemId, setNoteItemId] = useState<string | null>(null);
+	const [noteText, setNoteText] = useState("");
+	const listQuery = useListQuery();
+	const mut = useListMutation();
+
+	const handleScan = useCallback(async (res: BarcodeScanningResult) => {
+		try {
+			const payload = parsePayload(res.data);
+			const result = await mut.mutateAsync({ type: "add", item: { payload, note: "" } });
+			return { ...result, payload };
+		} catch (e) {
+			console.log("Failed to parse QR code data", e);
+			return { type: "error" as const };
+		}
+	}, [mut]);
+
+	const onScan = useCallback(async (res: BarcodeScanningResult) => {
+		const result = await handleScan(res);
+
+		if (result.type === "added" || result.type === "exists") {
+			queue.pushScan(result.payload, result.type, result.id);
+		} else {
+			queue.pushError("Failed to parse QR code data");
+		}
+	}, [handleScan, queue]);
 
 	useEffect(() => void (async () => {
 		const { status } = await Camera.requestCameraPermissionsAsync();
@@ -67,24 +83,24 @@ export default function CameraScreen() {
 	})(), []);
 
 	if (hasPermission === null) return (
-		<Flex direction="column" align="center" justify="center" w="100%" h="100%">
-			<ActivityIndicator size="large" />
+		<Box direction="column" align="center" justify="center" w="100%" h="100%">
+			<Loader size="large" />
 			<Text>
 				Requesting camera permissions...
 			</Text>
-		</Flex>
+		</Box>
 	);
 
 	if (hasPermission === false) return (
-		<Flex direction="column" align="center" justify="center" w="100%" h="100%" gap="md">
-			<Text variant="titleMedium">
+		<Box direction="column" align="center" justify="center" w="100%" h="100%" gap="md">
+			<Text fz={16} fw="500">
 				Camera access denied
 			</Text>
-			<Text variant="bodyMedium" style={{ color: "#666", textAlign: "center" }}>
+			<Text fz={14} c={Colors.TextDimmed} ta="center">
 				Can't access camera to scan QR codes!
 			</Text>
 			<Button
-				mode="contained"
+				variant="primary"
 				onPress={() => {
 					Camera.requestCameraPermissionsAsync().then(({ status }) => {
 						setHasPermission(status === "granted");
@@ -93,13 +109,13 @@ export default function CameraScreen() {
 			>
 				Retry
 			</Button>
-		</Flex>
+		</Box>
 	);
 
 	return (
-		<Flex w="100%" h="100%" align="center" justify="center">
+		<Box w="100%" h="100%" align="center" justify="center">
 			<CameraView
-				onBarcodeScanned={handleScan}
+				onBarcodeScanned={onScan}
 				barcodeScannerSettings={{
 					barcodeTypes: ["qr"],
 				}}
@@ -107,90 +123,103 @@ export default function CameraScreen() {
 				style={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0 }}
 			/>
 
-			<Box style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }} pointerEvents="none">
-				<ProgressBar
-					indeterminate
-				/>
+			<Box style={{ position: "absolute", top: 0, left: 0, width: "100%" }} pointerEvents="none">
+				<ProgressBar />
 			</Box>
 
-			<Snackbar
-				visible={!!error}
-				onDismiss={() => setError(null)}
-				duration={2000}
-			>
-				{error}
-			</Snackbar>
-
-			<Flex
+			<Box
 				pos="absolute"
 				w="100%"
 				h="100%"
 				p="xs"
+				pb="md"
+				gap="md"
 				justify="flex-end"
 				align="center"
-				pb="md"
 			>
+				<Box w="100%" pointerEvents="box-none">
+					<ScrollView
+						contentContainerStyle={{ gap: 8 }}
+						showsVerticalScrollIndicator={false}
+					>
+						{queue.messages.map(message => (
+							<Animated.View
+								key={message.id}
+								entering={FadeInDown.duration(300)}
+								exiting={FadeOutDown.duration(250)}
+								layout={LinearTransition.springify().mass(0.4)}
+							>
+								<Card onPress={() => queue.dismiss(message.id)} bg="#00000080">
+									<Box direction="row" align="center" justify="space-between" p="xs">
+										<Box direction="row" gap="xs" align="center">
+											{iconForType(message.type)}
+											<Text fw="500" c={Colors.TextDimmed}>
+												{labelForType(message.type)}
+											</Text>
+											<Text>
+												{messageText(message)}
+											</Text>
+										</Box>
+										{message.type !== "error" && (
+											<Button
+												variant="subtle"
+												py={0}
+												leftSection={<IconPencil size={IconSize.xs} color={Colors.Primary} />}
+												onPress={() => {
+													const item = listQuery.data?.find(i => i.id === message.itemId);
+													setNoteItemId(message.itemId);
+													setNoteText(item?.note ?? "");
+												}}
+											>
+												Note
+											</Button>
+										)}
+									</Box>
+								</Card>
+							</Animated.View>
+						))}
+					</ScrollView>
+				</Box>
 				<Box>
 					<Button
-						mode="contained"
-						icon="arrow-left"
+						variant="primary"
+						leftSection={<IconArrowLeft size={18} color={Colors.White} />}
 						onPress={() => router.replace("/")}
 					>
 						Back
 					</Button>
 				</Box>
-			</Flex>
+			</Box>
 
-			<Flex
-				pos="absolute"
-				w="100%"
-				h="100%"
-				p="xs"
-				justify="flex-end"
-				style={{ pointerEvents: "none" }}
+			<Modal
+				visible={noteItemId !== null}
+				onDismiss={() => setNoteItemId(null)}
 			>
-				<Box>
-					<ScrollView
-						contentContainerStyle={{ gap: 8 }}
-						showsVerticalScrollIndicator={false}
-					>
-						<Flex direction="column" gap="xs">
-							{messages.map(message => (
-								<Animated.View
-									key={message.id}
-									entering={FadeInDown.duration(300)}
-									exiting={FadeOutDown.duration(250)}
-									layout={LinearTransition.springify().mass(0.4)}
-								>
-									<Card
-										mode="elevated"
-										onPress={() => dismissMessage(message.id)}
-									>
-										<Card.Content
-											style={{
-												padding: 0,
-											}}
-										>
-											<Flex direction="row" align="center" justify="space-between" p="xs" px="md">
-												<Flex direction="row" gap="xs" align="center">
-													<MaterialCommunityIcons name="check" size={24} color={theme.colors.primary} />
-													<Text>
-														{message.payload.name}
-													</Text>
-												</Flex>
-												{/* <Button
-										>
-										Add Note
-										</Button> */}
-											</Flex>
-										</Card.Content>
-									</Card>
-								</Animated.View>
-							))}
-						</Flex>
-					</ScrollView>
+				<Box gap="md">
+					<TextInput
+						label="Note"
+						placeholder="Write a note about this person..."
+						value={noteText}
+						onChangeText={setNoteText}
+						multiline
+						autoFocus
+						style={{ minHeight: 120 }}
+					/>
+					<Box direction="row" justify="flex-end">
+						<Button
+							variant="primary"
+							onPress={() => {
+								if (noteItemId) {
+									mut.mutate({ type: "update", item: { id: noteItemId, note: noteText } });
+								}
+								setNoteItemId(null);
+							}}
+						>
+							Save
+						</Button>
+					</Box>
 				</Box>
-			</Flex>
-		</Flex>
+			</Modal>
+		</Box>
 	);
-};
+}

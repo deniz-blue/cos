@@ -12,14 +12,16 @@ export const getAll = async (): Promise<ListItem[]> => {
 	return JSON.parse(result) as ListItem[];
 };
 
-export const addToList = async (item: NewListItem): Promise<string | null> => {
+export type AddResult = { id: string; type: "added" } | { id: string; type: "exists" };
+
+export const addToList = async (item: NewListItem): Promise<AddResult> => {
 	const all = await getAll();
 
-	const payloadExists = all.some(existingItem => serializePayload(existingItem.payload) === serializePayload(item.payload));
+	const existing = all.find(existingItem => serializePayload(existingItem.payload) === serializePayload(item.payload));
 
-	if (payloadExists) return null;
+	if (existing) return { id: existing.id, type: "exists" };
 
-	let next: ListItem = {
+	const next: ListItem = {
 		...item,
 		id: crypto.randomUUID(),
 		created_at: Date.now(),
@@ -27,7 +29,7 @@ export const addToList = async (item: NewListItem): Promise<string | null> => {
 
 	await AsyncStorage.setItem("list", JSON.stringify([next, ...all]));
 
-	return next.id;
+	return { id: next.id, type: "added" };
 };
 
 export const updateListItem = async (item: UpdateListItem): Promise<void> => {

@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Payload } from "./payload";
 
 export interface ListItem {
@@ -9,24 +9,14 @@ export interface ListItem {
 	created_at: number;
 };
 
-export const fetchItemsPage = async ({ pageParam = 0 }: { pageParam: number }) => {
-	const limit = 20;
-
+export const fetchList = async (): Promise<ListItem[]> => {
 	const result = await AsyncStorage.getItem("list") || "[]";
-	const parsedList: ListItem[] = JSON.parse(result);
-	const paginatedList = parsedList.slice(pageParam, pageParam + limit);
-
-	return {
-		data: paginatedList,
-		nextOffset: result.length === limit ? pageParam + limit : null,
-	};
+	return JSON.parse(result);
 };
 
-export const useInfiniteListQuery = () => {
-	return useInfiniteQuery({
+export const useListQuery = () => {
+	return useQuery({
 		queryKey: ["items"],
-		queryFn: fetchItemsPage,
-		initialPageParam: 0,
-		getNextPageParam: (lastPage) => lastPage.nextOffset,
+		queryFn: fetchList,
 	});
 };
