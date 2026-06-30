@@ -1,14 +1,20 @@
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { DarkTheme, ThemeProvider } from "expo-router/react-navigation";
 import { Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Box } from "../components/base/Box";
 import { Colors } from "../theme/colors";
 import { queryClient } from "../lib/query-client";
+import { useDeepLinkPayload } from "../lib/useDeepLinkPayload";
 
 export default function RootLayout() {
 	const insets = useSafeAreaInsets();
+	const router = useRouter();
+
+	useDeepLinkPayload((id) => {
+		router.replace(`/scanned/${id}` as any);
+	});
 
 	return (
 		<QueryClientProvider client={queryClient}>

@@ -1,4 +1,4 @@
-name: Build APK
+name: Build & release
 
 on:
   push:
@@ -33,14 +33,15 @@ jobs:
       - name: Generate native project
         run: npx expo prebuild --platform android --clean --no-install
 
-      - name: Build APK
+      - name: Configure Android SDK
         run: |
           SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
           echo "sdk.dir=$SDK" > android/local.properties
-          cd android
-          ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a
+
+      - name: Build AAB (EAS local)
+        run: npx eas build --platform android --profile production --local --output cos.aab --non-interactive
 
       - uses: actions/upload-artifact@v4
         with:
-          name: cos-apk
-          path: android/app/build/outputs/apk/release/*.apk
+          name: cos-aab
+          path: cos.aab

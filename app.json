@@ -13,7 +13,24 @@
 			"adaptiveIcon": {
 				"foregroundImage": "./assets/adaptive-icon.png",
 				"backgroundColor": "#000000"
-			}
+			},
+			"intentFilters": [
+				{
+					"autoVerify": true,
+					"action": "VIEW",
+					"data": [
+						{
+							"scheme": "https",
+							"host": "cos.tsx.lt",
+							"pathPrefix": "/"
+						}
+					],
+					"category": [
+						"BROWSABLE",
+						"DEFAULT"
+					]
+				}
+			]
 		},
 		"web": {
 			"output": "single",

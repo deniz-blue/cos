@@ -1,4 +1,4 @@
-const QR_BASE = "https://cos.tsx.lt";
+export const QR_BASE = "https://cos.tsx.lt";
 
 const stripUrlPrefix = (data: string): string => {
 	if (!data.startsWith(QR_BASE)) return data;
