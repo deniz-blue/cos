@@ -32,7 +32,7 @@ jobs:
 
       - run: |
           pnpm setup
-          export PNPM_HOME="~/.local/share/pnpm"
+          source /home/runner/.bashrc
           pnpm add --global eas-cli
 
       - name: Generate native project
