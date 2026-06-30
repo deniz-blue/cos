@@ -30,11 +30,6 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: |
-          pnpm setup
-          source /home/runner/.bashrc
-          pnpm add --global eas-cli
-
       - name: Generate native project
         run: npx expo prebuild --platform android --clean --no-install
 
@@ -44,7 +39,7 @@ jobs:
           echo "sdk.dir=$SDK" > android/local.properties
 
       - name: Build AAB (EAS local)
-        run: npx eas build --platform android --profile production --local --output cos.aab --non-interactive
+        run: pnpm dlx eas-cli build --platform android --profile production --local --output cos.aab --non-interactive
 
       - uses: actions/upload-artifact@v4
         with:
