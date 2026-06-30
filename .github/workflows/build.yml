@@ -30,7 +30,10 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm add --global eas-cli
+      - run: |
+          pnpm setup
+          export PNPM_HOME="~/.local/share/pnpm"
+          pnpm add --global eas-cli
 
       - name: Generate native project
         run: npx expo prebuild --platform android --clean --no-install
