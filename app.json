@@ -65,10 +65,7 @@
 			"reactCompiler": true
 		},
 		"extra": {
-			"router": {},
-			"eas": {
-				"projectId": "1f4879ac-e52b-4101-a7ab-142f8e032295"
-			}
+			"router": {}
 		},
 		"owner": "deniz.blue"
 	}

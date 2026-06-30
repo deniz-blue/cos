@@ -1,17 +1,19 @@
 #!/bin/sh
 set -e
 
+cd /workspace
+
+# Install JS deps and sync the checked-in Android project before building.
+pnpm install --frozen-lockfile
+
+npx expo prebuild --platform android --clean --no-install
+
 # Generate local.properties for the SDK inside the container
 echo "sdk.dir=$ANDROID_HOME" > /workspace/android/local.properties
 
-# Install JS deps
-cd /workspace
-pnpm install --frozen-lockfile
-
-# Build release APK (arm64 only, skip lint & tests for speed)
+# Build release AAB and APK artifacts.
 cd android
-./gradlew assembleRelease \
-  -PreactNativeArchitectures=arm64-v8a \
+./gradlew bundleRelease assembleRelease \
   -x lint \
   -x test \
   --build-cache \
@@ -19,4 +21,5 @@ cd android
 
 echo ""
 echo "=== ✅ Build complete ==="
-echo "APK: /workspace/android/app/build/outputs/apk/release/app-arm64-v8a-release.apk"
+echo "AAB: /workspace/android/app/build/outputs/bundle/release/app-release.aab"
+echo "APKs: /workspace/android/app/build/outputs/apk/release/*.apk"

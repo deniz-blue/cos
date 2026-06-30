@@ -1,0 +1,12 @@
+.git
+.expo
+.github
+android/app/build
+android/build
+android/app/.cxx
+build
+dist
+ios/Pods
+node_modules
+**/node_modules
+*.log

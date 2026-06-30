@@ -1,12 +1,13 @@
 # cos APK builder
-# Reproducible Android build environment with pinned SDK/NDK versions.
+# Reproducible Android build environment for Android AAB and APK releases.
 
-FROM eclipse-temurin:21-jdk-bookworm
+FROM eclipse-temurin:21-jdk
 
 # --------------- Node + pnpm ---------------
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get update -qq && apt-get install -y -qq nodejs unzip && \
-    npm install -g pnpm@latest && \
+RUN apt-get update -qq && apt-get install -y -qq ca-certificates curl unzip && \
+    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get update -qq && apt-get install -y -qq nodejs && \
+    npm install -g pnpm@10 && \
     rm -rf /var/lib/apt/lists/*
 
 # --------------- Android SDK ---------------
@@ -38,5 +39,8 @@ RUN yes | sdkmanager --licenses > /dev/null 2>&1 && \
 
 # --------------- Workspace ---------------
 WORKDIR /workspace
+ENV CI=true
+ENV GRADLE_USER_HOME=/root/.gradle
 COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]

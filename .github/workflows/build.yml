@@ -17,31 +17,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - run: npm install -g pnpm@10
-
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-
-      - run: pnpm install --frozen-lockfile
-
-      - name: Generate native project
-        run: npx expo prebuild --platform android --clean --no-install
-
-      - name: Configure Android SDK
+      - name: Build Android artifacts in Docker
         run: |
-          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
-          echo "sdk.dir=$SDK" > android/local.properties
-
-      - name: Build AAB (EAS local)
-        run: pnpm dlx eas-cli build --platform android --profile production --local --output cos.aab --non-interactive
+          docker build -f docker/Dockerfile -t cos-builder .
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" \
+            -v cos-gradle-cache:/root/.gradle \
+            cos-builder
 
       - uses: actions/upload-artifact@v4
         with:
-          name: cos-aab
-          path: cos.aab
+          name: cos-android-artifacts
+          path: |
+            android/app/build/outputs/bundle/release/*.aab
+            android/app/build/outputs/apk/release/*.apk

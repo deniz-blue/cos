@@ -6,8 +6,8 @@ services:
     image: cos-builder
     volumes:
       - ..:/workspace
-    # Optional: share host's Gradle cache so dependencies don't redownload
-    - gradle-cache:/root/.gradle
+      # Optional: share host's Gradle cache so dependencies don't redownload
+      - gradle-cache:/root/.gradle
 
 volumes:
   gradle-cache:
