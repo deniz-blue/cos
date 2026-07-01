@@ -30,7 +30,7 @@
 		},
 		"web": {
 			"output": "single",
-			"favicon": "./public/cos.svg"
+			"favicon": "./public/maskable-icon.png"
 		},
 		"plugins": [
 			[
