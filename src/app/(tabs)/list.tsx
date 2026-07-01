@@ -1,18 +1,19 @@
-import { IconChevronDown, IconChevronUp, IconExternalLink, IconNote, IconPencil, IconTrash } from "@tabler/icons-react-native";
+import { IconChevronDown, IconChevronUp, IconTrash } from "@tabler/icons-react-native";
 import { useState } from "react";
-import { FlatList, Linking, TouchableOpacity } from "react-native";
+import { FlatList, TouchableOpacity } from "react-native";
 import { Box } from "../../components/base/Box";
 import { Button } from "../../components/base/Button";
 import { Card } from "../../components/base/Card";
 import { Loader } from "../../components/base/Loader";
 import { Modal } from "../../components/base/Modal";
 import { Text } from "../../components/base/Text";
-import { TextInput } from "../../components/base/TextInput";
-import { KnownSocials } from "../../lib/socials";
 import { useListMutation } from "../../lib/useListMutation";
 import { ListItem, useListQuery } from "../../lib/useListQuery";
 import { Colors } from "../../theme/colors";
 import { FontSize, IconSize } from "../../theme/sizing";
+import { SocialsList } from "../../components/SocialsList";
+import { NoteSection } from "../../components/NoteSection";
+import { NoteEditModal } from "../../components/NoteEditModal";
 
 export default function ListPage() {
 	const query = useListQuery();
@@ -50,15 +51,12 @@ export default function ListPage() {
 const ListItemCard = ({ item }: { item: ListItem }) => {
 	const [expanded, setExpanded] = useState(false);
 	const [noteDialog, setNoteDialog] = useState(false);
-	const [noteText, setNoteText] = useState("");
 	const [deleteDialog, setDeleteDialog] = useState(false);
 	const mut = useListMutation();
 	const date = new Date(item.created_at).toLocaleString();
 
-	const socials = Object.entries(item.payload.socials).filter(([, v]) => !!v);
-
-	const saveNote = () => {
-		mut.mutate({ type: "update", item: { id: item.id, note: noteText } });
+	const saveNote = (note: string) => {
+		mut.mutate({ type: "update", item: { id: item.id, note } });
 		setNoteDialog(false);
 	};
 
@@ -86,75 +84,9 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
 				</TouchableOpacity>
 				{expanded && (
 					<Box direction="column" gap="sm" pt="sm">
-						<Box
-							bg={Colors.Dark7}
-							radius={8}
-							p="sm"
-							direction="column"
-							gap="xs"
-						>
-							<Box direction="row" justify="space-between" align="center">
-								<Box direction="row" gap="xs" align="center">
-									<IconNote size={IconSize.xs} color={Colors.Text} />
-									<Text fz={FontSize.sm} c={Colors.Text}>Note</Text>
-								</Box>
-								<Button
-									variant="subtle"
-									size="sm"
-									py={0}
-									leftSection={<IconPencil size={IconSize.xs} color={Colors.Primary} />}
-									onPress={() => { setNoteText(item.note); setNoteDialog(true); }}
-								>
-									Edit
-								</Button>
-							</Box>
-							<Text fz={FontSize.sm} c={item.note ? Colors.Text : Colors.TextDimmed}>
-								{item.note || "<no note>"}
-							</Text>
-						</Box>
+						<NoteSection note={item.note} onEdit={() => setNoteDialog(true)} />
 
-						<Box direction="column" gap="sm">
-							{socials.length > 0
-								? socials.map(([k, v]) => {
-									const social = KnownSocials[k];
-									const Icon = social?.icon;
-									if (!social) {
-										return (
-											<Box key={k} direction="row" gap="xs" align="center">
-												<Text fz={FontSize.md} c={Colors.TextDimmed}>{k}:</Text>
-												<Text fz={FontSize.sm}>{v}</Text>
-											</Box>
-										);
-									}
-									const url = social.url.replace("$", v);
-									return (
-										<TouchableOpacity
-											key={k}
-											onPress={() => Linking.openURL(url)}
-											activeOpacity={0.7}
-										>
-											<Box
-												direction="row"
-												align="center"
-												p="sm"
-												radius={8}
-												bg={Colors.Dark7}
-											>
-												<Icon size={IconSize.md} color={Colors.Text} />
-												<Box direction="row" flex={1} justify="space-between" align="center" ml="sm">
-													<Text fz={FontSize.sm} c={Colors.Text}>{social.title}</Text>
-													<Box direction="row" gap="xs" align="center">
-														<Text fz={FontSize.md} c={Colors.Text}>{v}</Text>
-														<IconExternalLink size={IconSize.xs} color={Colors.TextDimmed} />
-													</Box>
-												</Box>
-											</Box>
-										</TouchableOpacity>
-									);
-								})
-								: <Box align="center"><Text fz={FontSize.md} c={Colors.TextDimmed}>No socials</Text></Box>
-							}
-						</Box>
+						<SocialsList socials={item.payload.socials} />
 
 						<Button
 							variant="subtle"
@@ -168,22 +100,12 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
 				)}
 			</Card>
 
-			<Modal visible={noteDialog} onDismiss={() => setNoteDialog(false)}>
-				<Box gap="md">
-					<TextInput
-						label="Note"
-						placeholder="Write a note about this person..."
-						value={noteText}
-						onChangeText={setNoteText}
-						multiline
-						autoFocus
-						style={{ minHeight: 120 }}
-					/>
-					<Box direction="row" justify="flex-end">
-						<Button variant="primary" onPress={saveNote}>Save</Button>
-					</Box>
-				</Box>
-			</Modal>
+			<NoteEditModal
+				visible={noteDialog}
+				initialNote={item.note}
+				onSave={saveNote}
+				onDismiss={() => setNoteDialog(false)}
+			/>
 
 			<Modal visible={deleteDialog} onDismiss={() => setDeleteDialog(false)}>
 				<Box gap="md">

@@ -9,10 +9,8 @@ import { Box } from "../components/base/Box";
 import { Button } from "../components/base/Button";
 import { Card } from "../components/base/Card";
 import { Loader } from "../components/base/Loader";
-import { Modal } from "../components/base/Modal";
 import { ProgressBar } from "../components/base/ProgressBar";
 import { Text } from "../components/base/Text";
-import { TextInput } from "../components/base/TextInput";
 import type { QueueMessage } from "../lib/message-queue";
 import { useMessageQueue } from "../lib/message-queue";
 import { parsePayload } from "../lib/payload";
@@ -20,6 +18,7 @@ import { useListMutation } from "../lib/useListMutation";
 import { useListQuery } from "../lib/useListQuery";
 import { Colors } from "../theme/colors";
 import { IconSize } from "../theme/sizing";
+import { NoteEditModal } from "../components/NoteEditModal";
 
 const iconForType = (type: QueueMessage["type"]) => {
 	switch (type) {
@@ -54,7 +53,6 @@ export default function CameraScreen() {
 	const queue = useMessageQueue();
 	const [hasPermission, setHasPermission] = useState<boolean | null>(null);
 	const [noteItemId, setNoteItemId] = useState<string | null>(null);
-	const [noteText, setNoteText] = useState("");
 	const listQuery = useListQuery();
 	const mut = useListMutation();
 
@@ -172,9 +170,7 @@ export default function CameraScreen() {
 												py={0}
 												leftSection={<IconPencil size={IconSize.xs} color={Colors.Primary} />}
 												onPress={() => {
-													const item = listQuery.data?.find(i => i.id === message.itemId);
 													setNoteItemId(message.itemId);
-													setNoteText(item?.note ?? "");
 												}}
 											>
 												Note
@@ -197,35 +193,17 @@ export default function CameraScreen() {
 				</Box>
 			</Box>
 
-			<Modal
+			<NoteEditModal
 				visible={noteItemId !== null}
+				initialNote={listQuery.data?.find(i => i.id === noteItemId)?.note ?? ""}
+				onSave={(note) => {
+					if (noteItemId) {
+						mut.mutate({ type: "update", item: { id: noteItemId, note } });
+					}
+					setNoteItemId(null);
+				}}
 				onDismiss={() => setNoteItemId(null)}
-			>
-				<Box gap="md">
-					<TextInput
-						label="Note"
-						placeholder="Write a note about this person..."
-						value={noteText}
-						onChangeText={setNoteText}
-						multiline
-						autoFocus
-						style={{ minHeight: 120 }}
-					/>
-					<Box direction="row" justify="flex-end">
-						<Button
-							variant="primary"
-							onPress={() => {
-								if (noteItemId) {
-									mut.mutate({ type: "update", item: { id: noteItemId, note: noteText } });
-								}
-								setNoteItemId(null);
-							}}
-						>
-							Save
-						</Button>
-					</Box>
-				</Box>
-			</Modal>
+			/>
 		</Box>
 	);
 }

@@ -23,6 +23,15 @@ export const createPayload = (): Payload => {
 	};
 };
 
+const safeDecode = (s: string | undefined): string => {
+	if (!s) return s ?? "";
+	try {
+		return decodeURIComponent(s);
+	} catch {
+		return s;
+	}
+};
+
 export const parsePayload = (data: string): Payload => {
 	const inner = stripUrlPrefix(data);
 	const [v, name, soc, details] = inner.split("|");
@@ -37,11 +46,11 @@ export const parsePayload = (data: string): Payload => {
 			if (colon === -1) continue;
 			const k = s.slice(0, colon);
 			const v = s.slice(colon + 1);
-			if (k) socials[k] = v;
+			if (k) socials[k] = safeDecode(v);
 		}
 	}
 
-	return { name, socials, details };
+	return { name: safeDecode(name), socials, details: safeDecode(details) };
 };
 
 export const isEmptyPayload = (payload: Payload): boolean => {
@@ -51,12 +60,12 @@ export const isEmptyPayload = (payload: Payload): boolean => {
 export const serializePayload = (payload: Payload): string => {
 	return QR_BASE + "#" + [
 		"0",
-		payload.name,
+		encodeURIComponent(payload.name),
 		Object.entries(payload.socials)
 			.filter(([, v]) => !!v)
 			.sort(([k1], [k2]) => k1.localeCompare(k2))
-			.map(([k, v]) => `${k}:${v}`)
+			.map(([k, v]) => `${k}:${encodeURIComponent(v)}`)
 			.join(","),
-		payload.details,
+		encodeURIComponent(payload.details),
 	].join("|");
 };
