@@ -11,10 +11,8 @@ if (gradle.includes("SIGNING_CONFIG_RELEASE_MARKER")) {
 
 // Replace the Expo-template release buildType that hardcodes signingConfigs.debug
 gradle = gradle.replace(
-  /release \{\n\s*\/\/ Caution! In production.*\n\s*signingConfig signingConfigs\.debug/,
-  `release {
-            // SIGNING_CONFIG_RELEASE_MARKER
-            signingConfig signingConfigs.release`
+  /release \{\n\s*\/\/ Caution! In production, you need to generate your own keystore file\.\n\s*\/\/ see https:\/\/reactnative\.dev\/docs\/signed-apk-android\.\n\s*signingConfig signingConfigs\.debug/,
+  `release {\n            // SIGNING_CONFIG_RELEASE_MARKER\n            signingConfig signingConfigs.release`
 );
 
 // Inject signingConfigs.release into signingConfigs block
