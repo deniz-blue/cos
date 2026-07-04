@@ -9,7 +9,7 @@ pnpm install --frozen-lockfile
 npx expo prebuild --platform android --clean --no-install
 
 # Patch the generated build.gradle with release signing config (Expo CNG regenerates this).
-node docker/patch-gradle-signing.js
+node docker/patch-gradle-signing.cjs
 
 # Pin Gradle to 8.x (IBM_SEMERU removed from 9.x, breaks plugins)
 sed -i 's|gradle-9\.[0-9]*\.[0-9]*-bin\.zip|gradle-8.14.4-bin.zip|' /workspace/android/gradle/wrapper/gradle-wrapper.properties
