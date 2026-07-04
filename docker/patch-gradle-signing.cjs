@@ -36,7 +36,7 @@ gradle = gradle.replace(
                 keyAlias props["keyAlias"]
                 keyPassword props["storePassword"]
             } else {
-                storeFile file("debug.keystore")
+                storeFile file("cos-release.keystore")
                 storePassword "android"
                 keyAlias "androiddebugkey"
                 keyPassword "android"

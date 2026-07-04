@@ -21,7 +21,7 @@ echo "sdk.dir=$ANDROID_HOME" > /workspace/android/local.properties
 if [ -f /workspace/cos-release.keystore ] && [ -n "${KEYSTORE_PASSWORD:-}" ] && [ -n "${KEY_ALIAS:-}" ]; then
     cp /workspace/cos-release.keystore /workspace/android/app/cos-release.keystore
     cat > /workspace/android/keystore.properties <<EOF
-storeFile=app/cos-release.keystore
+storeFile=cos-release.keystore
 storePassword=${KEYSTORE_PASSWORD}
 keyAlias=${KEY_ALIAS}
 keyPassword=${KEYSTORE_PASSWORD}
