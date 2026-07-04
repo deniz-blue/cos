@@ -17,12 +17,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Decode release keystore
+        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: echo "$KEYSTORE_BASE64" | base64 -d > cos-release.keystore
+
       - name: Build Android artifacts in Docker
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD || '' }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS || '' }}
         run: |
           docker build -f docker/Dockerfile -t cos-builder .
           docker run --rm \
             -v "${{ github.workspace }}:/workspace" \
             -v cos-gradle-cache:/root/.gradle \
+            -e KEYSTORE_PASSWORD \
+            -e KEY_ALIAS \
             cos-builder
 
       - uses: actions/upload-artifact@v4
