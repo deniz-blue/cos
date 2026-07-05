@@ -1,56 +1,36 @@
-# Welcome to your Expo app 👋
+# Cos
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Cos is a social media contact sharing app via QR codes. It's intended for use in large events such as furry/cosplay conventions.
 
-## Get started
+## How it works
 
-1. Install dependencies
+**Setup**
 
-   ```bash
-   npm install
-   ```
+1. Download the app on Google Play Store (pending as of 05-07-2026) or open the web application on https://cos.tsx.lt (requires internet)
+2. Set up your profile details through the**Edit Profile** button/tab. Enter your name, anything differentiating about your appearance and your social media usernames.
+3. Done! Thats all.
 
-2. Start the app
+This app absolutely does not use any internet connectivity, outside the case when you do not have the application installed in which case you would be using the web application.
 
-   ```bash
-   npx expo start
-   ```
+**Scanning others' QR codes**
 
-In the output, you'll find options to open the app in a
+Either use the app's "**Scan QR Code**" button on the right bottom corner for scanning multiple QR codes in quick succession, or scan using any other QR code scanner, such as your built-in system Camera application. Scanning outside the Cos app works; if the app is installed, the app will open. If you do not have the app installed, the web application will open in your default browser.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Any scanned QR codes will persist in your **history**. Once you scan, you can return to your history at the end of the day or when you are not busy.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+On the app's **Scan QR Code** screen, you can scan many QR codes in quick succession. Any scanned QR codes will display a small message in the bottom with a button to add/edit a **custom note** for this person.
 
-## Get a fresh project
+**Letting others scan your QR code**
 
-When you're ready, run:
+Simply open the app! The main screen already displays your QR code.
 
-```bash
-npm run reset-project
-```
+**View previously scanned QR codes**
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+The second tab in the app is your history. It shows all the QR codes/profiles you scanned using the app. You can view their social media usernames and click them to open them in the relevant apps immediately.
 
-### Other setup steps
+**Add Custom Notes**
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Custom notes allow you to not forget who is who. After scanning, you can quickly add a note to view for later.
 
-## Learn more
 
-To learn more about developing your project with Expo, look at the following resources:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
