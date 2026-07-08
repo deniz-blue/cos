@@ -3,14 +3,15 @@ import { BarcodeScanningResult, Camera, CameraView } from "expo-camera";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { ScrollView, Vibration } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeInDown, FadeOutDown, LinearTransition } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Box } from "../components/base/Box";
 import { Button } from "../components/base/Button";
 import { Card } from "../components/base/Card";
 import { Loader } from "../components/base/Loader";
 import { ProgressBar } from "../components/base/ProgressBar";
 import { Text } from "../components/base/Text";
+import { NoteEditModal } from "../components/NoteEditModal";
 import type { QueueMessage } from "../lib/message-queue";
 import { useMessageQueue } from "../lib/message-queue";
 import { parsePayload } from "../lib/payload";
@@ -18,7 +19,6 @@ import { useListMutation } from "../lib/useListMutation";
 import { useListQuery } from "../lib/useListQuery";
 import { Colors } from "../theme/colors";
 import { IconSize } from "../theme/sizing";
-import { NoteEditModal } from "../components/NoteEditModal";
 
 const iconForType = (type: QueueMessage["type"]) => {
 	switch (type) {
@@ -153,7 +153,7 @@ export default function CameraScreen() {
 								exiting={FadeOutDown.duration(250)}
 								layout={LinearTransition.springify().mass(0.4)}
 							>
-								<Card onPress={() => queue.dismiss(message.id)} bg="#00000080">
+								<Card onPress={() => queue.dismiss(message.id)} bg="rgba(0,0,0,0.8)">
 									<Box direction="row" align="center" justify="space-between" p="xs">
 										<Box direction="row" gap="xs" align="center">
 											{iconForType(message.type)}

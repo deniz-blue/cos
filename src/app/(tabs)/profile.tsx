@@ -25,16 +25,19 @@ export default function ProfilePage() {
 	const saveTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
 	useEffect(() => {
-		setLocalPayload(p => p || (payloadQuery.data ?? createPayload()));
+		setLocalPayload((p) => p || (payloadQuery.data ?? createPayload()));
 	}, [payloadQuery.data]);
 
 	const mut = useProfileMutation();
 
-	const setPayload = useCallback((updated: Payload) => {
-		setLocalPayload(updated);
-		if (saveTimeout.current) clearTimeout(saveTimeout.current);
-		saveTimeout.current = setTimeout(() => mut.mutate(updated), 500);
-	}, [mut]);
+	const setPayload = useCallback(
+		(updated: Payload) => {
+			setLocalPayload(updated);
+			if (saveTimeout.current) clearTimeout(saveTimeout.current);
+			saveTimeout.current = setTimeout(() => mut.mutate(updated), 500);
+		},
+		[mut],
+	);
 
 	const dialogSocial = dialogKey ? KnownSocials[dialogKey] : undefined;
 
@@ -49,7 +52,9 @@ export default function ProfilePage() {
 						<TouchableOpacity onPress={() => router.push("..")}>
 							<IconArrowLeft size={24} color={Colors.Text} />
 						</TouchableOpacity>
-						<Text fz={FontSize.lg} fw="500">My QR Code</Text>
+						<Text fz={FontSize.lg} fw="500">
+							My QR Code
+						</Text>
 						{mut.isPending && <Loader size="small" />}
 					</Box>
 
@@ -76,6 +81,7 @@ export default function ProfilePage() {
 								required
 								value={payload.name}
 								onChangeText={(text) => setPayload({ ...payload, name: text })}
+								maxLength={128}
 							/>
 
 							<TextInput
@@ -84,6 +90,7 @@ export default function ProfilePage() {
 								placeholder="Hatsune Miku"
 								value={payload.details}
 								onChangeText={(text) => setPayload({ ...payload, details: text })}
+								maxLength={128}
 							/>
 
 							<InputWrapper label="Socials" description="Enter your social media usernames" />
@@ -112,15 +119,12 @@ export default function ProfilePage() {
 					)}
 				</Box>
 
-				<Modal
-					visible={!!dialogKey}
-					onDismiss={() => setDialogKey(null)}
-				>
+				<Modal visible={!!dialogKey} onDismiss={() => setDialogKey(null)}>
 					<Box p="xs" mx="xs" pb={0}>
 						<TextInput
 							autoFocus
 							label={dialogSocial?.title + " Username"}
-							value={dialogKey ? payload?.socials[dialogKey] ?? "" : ""}
+							value={dialogKey ? (payload?.socials[dialogKey] ?? "") : ""}
 							autoCapitalize="none"
 							autoComplete="off"
 							autoCorrect={false}
@@ -132,10 +136,13 @@ export default function ProfilePage() {
 								});
 							}}
 							onSubmitEditing={() => setDialogKey(null)}
+							maxLength={32}
 						/>
 					</Box>
 					<Box direction="row" justify="flex-end" p="xs" pt={0}>
-						<Button variant="subtle" onPress={() => setDialogKey(null)}>Done</Button>
+						<Button variant="subtle" onPress={() => setDialogKey(null)}>
+							Done
+						</Button>
 					</Box>
 				</Modal>
 			</ScrollView>

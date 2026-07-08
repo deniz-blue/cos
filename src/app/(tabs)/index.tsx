@@ -99,7 +99,7 @@ export default function QrPage() {
 
 					<Box mih={48} align="center" justify="center">
 						<Text fz={FontSize.sm} c={Colors.TextDimmed} ta="center">
-							Share contacts with other cosplayers.
+							Share socials with others.
 							{"\n"}
 							Sharing is done via QR codes; works offline.
 							{"\n"}

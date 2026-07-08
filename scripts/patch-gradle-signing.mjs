@@ -1,21 +1,23 @@
-const fs = require("fs");
-const path = require("path");
+import { readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 
-const gradlePath = path.join(__dirname, "..", "android", "app", "build.gradle");
-let gradle = fs.readFileSync(gradlePath, "utf-8");
+const gradlePath = join(import.meta.dirname, "..", "android", "app", "build.gradle");
+let gradle = readFileSync(gradlePath, "utf-8");
 
 if (gradle.includes("SIGNING_CONFIG_RELEASE_MARKER")) {
   console.log("build.gradle already patched for release signing");
   process.exit(0);
 }
 
-// Replace the Expo-template release buildType that hardcodes signingConfigs.debug
+// Replace Expo-template release buildType debug signing with our release config.
 gradle = gradle.replace(
   /release \{\n\s*\/\/ Caution! In production, you need to generate your own keystore file\.\n\s*\/\/ see https:\/\/reactnative\.dev\/docs\/signed-apk-android\.\n\s*signingConfig signingConfigs\.debug/,
-  `release {\n            // SIGNING_CONFIG_RELEASE_MARKER\n            signingConfig signingConfigs.release`
+  `release {
+            // SIGNING_CONFIG_RELEASE_MARKER
+            signingConfig signingConfigs.release`
 );
 
-// Inject signingConfigs.release into signingConfigs block
+// Inject signingConfigs.release alongside signingConfigs.debug.
 gradle = gradle.replace(
   /signingConfigs \{\n\s*debug \{[^}]+\}[^}]*\n\s*\}\n\s*buildTypes \{/,
   `signingConfigs {
@@ -46,5 +48,5 @@ gradle = gradle.replace(
     buildTypes {`
 );
 
-fs.writeFileSync(gradlePath, gradle);
+writeFileSync(gradlePath, gradle);
 console.log("Patched android/app/build.gradle with release signing config");
