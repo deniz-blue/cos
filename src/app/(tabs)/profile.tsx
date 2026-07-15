@@ -47,7 +47,7 @@ export default function ProfilePage() {
 			<ScrollView>
 				<Box direction="column" align="stretch" justify="center" p="md" gap="md">
 					<Box align="center" direction="row" gap="xs">
-						<ButtonBase onPress={() => router.push("..")}>
+						<ButtonBase onPress={() => router.push("..")} aria-label="Back">
 							<IconArrowLeft size={24} color={Colors.Text} />
 						</ButtonBase>
 						<Text fz={FontSize.lg} fw="500">
@@ -74,6 +74,7 @@ export default function ProfilePage() {
 						<Box gap="md">
 							<TextInput
 								label="Name"
+								aria-label="Name"
 								description="Enter your name"
 								required
 								value={payload.name}
@@ -83,6 +84,7 @@ export default function ProfilePage() {
 
 							<TextInput
 								label="Details"
+								aria-label="Details"
 								description="Physical description, cosplay character, furry species, etc."
 								value={payload.details}
 								onChangeText={(text) => setPayload((p) => void (p.details = text))}
@@ -104,6 +106,7 @@ export default function ProfilePage() {
 									<TextInput
 										leftSection={<Icon size={IconSize.sm} color={Colors.TextDimmed} />}
 										label={title}
+										aria-label={title}
 										value={payload?.socials[key] ?? ""}
 										autoCapitalize="none"
 										autoComplete="off"

@@ -1,14 +1,11 @@
 import type { ReactNode } from "react";
 import { type ViewStyle } from "react-native";
-import { Colors, getThemeColor } from "../../theme/colors";
 import { Box, type BoxProps } from "./Box";
-import { ButtonBase } from "./ButtonBase";
-import { Text } from "./Text";
+import { Button } from "./button/Button";
 
 export interface FabProps extends BoxProps {
 	icon?: ReactNode;
 	label?: string;
-	color?: string;
 	onPress?: () => void;
 }
 
@@ -20,29 +17,25 @@ const shadow: ViewStyle = {
 	shadowRadius: 4,
 };
 
-export const Fab = ({ icon, label, color = "Primary", onPress, style, ...rest }: FabProps) => {
-	const bg = getThemeColor(color);
-
+export const Fab = ({ icon, label, onPress, style, ...rest }: FabProps) => {
 	return (
-		<ButtonBase onPress={onPress}>
-			<Box
-				pos="absolute"
-				right={16}
-				bottom={16}
-				h={56}
-				radius={16}
-				bg={bg}
-				direction="row"
-				align="center"
-				px="md"
-				style={[shadow, style]}
-				{...rest}
-			>
-				{icon}
-				<Text fz={14} fw="bold" c={Colors.White} style={{ marginLeft: 8 }}>
+		<Box absoluteFill pointerEvents="box-none" justify="flex-end" p="md">
+			<Box direction="row" justify="flex-end">
+				<Button
+					onPress={onPress}
+					radius={16}
+					size="xl"
+					variant="primary"
+					direction="row"
+					align="center"
+					px="md"
+					style={[shadow, style]}
+					leftSection={icon}
+					{...rest}
+				>
 					{label}
-				</Text>
+				</Button>
 			</Box>
-		</ButtonBase>
+		</Box>
 	);
 };

@@ -23,6 +23,7 @@ export const Modal = ({ visible, onDismiss, children }: ModalProps) => {
 		>
 			<Pressable
 				onPress={onDismiss}
+				importantForAccessibility="no"
 				style={{
 					flex: 1,
 					justifyContent: "center",
@@ -31,8 +32,9 @@ export const Modal = ({ visible, onDismiss, children }: ModalProps) => {
 				}}
 			>
 				<KeyboardAvoidingView behavior="padding">
-					<Pressable onPress={(e) => e.stopPropagation()}>
+					<Pressable onPress={(e) => e.stopPropagation()} importantForAccessibility="no">
 						<Box
+							accessible
 							bg={Colors.Background}
 							radius={Radius.Default}
 							p="md"

@@ -13,6 +13,7 @@ export const ControlHeight = {
 	sm: 28,
 	md: 34,
 	lg: 42,
+	xl: 50,
 } as const;
 
 export type ThemeFont = keyof typeof Font;

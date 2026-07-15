@@ -72,7 +72,7 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
 				<ButtonBase onPress={() => setExpanded((e) => !e)}>
 					<Box direction="row" justify="space-between" align="center" gap="xs">
 						<Box>
-							<Text fz={FontSize.xs} c={Colors.TextDimmed}>
+							<Text fz={FontSize.xs} c={Colors.TextDimmed} aria-hidden>
 								{date}
 							</Text>
 							<Box direction="row" gap="xs">
