@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Box } from "./base/Box";
-import { Button } from "./base/Button";
+import { Button } from "./base/button/Button";
+import { TextInput } from "./base/input/TextInput";
 import { Modal } from "./base/Modal";
-import { TextInput } from "./base/TextInput";
 
 interface NoteEditModalProps {
 	visible: boolean;
@@ -11,7 +11,12 @@ interface NoteEditModalProps {
 	onDismiss: () => void;
 }
 
-export const NoteEditModal = ({ visible, initialNote = "", onSave, onDismiss }: NoteEditModalProps) => {
+export const NoteEditModal = ({
+	visible,
+	initialNote = "",
+	onSave,
+	onDismiss,
+}: NoteEditModalProps) => {
 	const [noteText, setNoteText] = useState(initialNote);
 
 	useEffect(() => {
@@ -30,10 +35,12 @@ export const NoteEditModal = ({ visible, initialNote = "", onSave, onDismiss }: 
 					onChangeText={setNoteText}
 					multiline
 					autoFocus
-					style={{ minHeight: 120 }}
+					style={{ minHeight: 40, textAlignVertical: "top" }}
 				/>
 				<Box direction="row" justify="flex-end">
-					<Button variant="primary" onPress={() => onSave(noteText)}>Save</Button>
+					<Button variant="primary" onPress={() => onSave(noteText)}>
+						Save
+					</Button>
 				</Box>
 			</Box>
 		</Modal>

@@ -1,9 +1,9 @@
 import { IconNote, IconPencil } from "@tabler/icons-react-native";
-import { Box } from "./base/Box";
-import { Button } from "./base/Button";
-import { Text } from "./base/Text";
 import { Colors } from "../theme/colors";
 import { FontSize, IconSize } from "../theme/sizing";
+import { Box } from "./base/Box";
+import { Button } from "./base/button/Button";
+import { Text } from "./base/Text";
 
 interface NoteSectionProps {
 	note: string;

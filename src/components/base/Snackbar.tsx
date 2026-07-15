@@ -1,10 +1,11 @@
-import { useEffect, useRef } from "react";
-import { Animated, TouchableOpacity } from "react-native";
 import type { ReactNode } from "react";
-import { Box } from "./Box";
-import { Text } from "./Text";
+import { useEffect, useRef } from "react";
+import { Animated } from "react-native";
 import { Colors } from "../../theme/colors";
 import { Radius } from "../../theme/sizing";
+import { Box } from "./Box";
+import { ButtonBase } from "./ButtonBase";
+import { Text } from "./Text";
 
 export interface SnackbarProps {
 	visible: boolean;
@@ -71,7 +72,7 @@ export const Snackbar = ({
 					transform: [{ translateY }],
 				}}
 			>
-				<TouchableOpacity onPress={onDismiss} activeOpacity={0.9}>
+				<ButtonBase onPress={onDismiss}>
 					<Box
 						direction="row"
 						align="center"
@@ -91,18 +92,22 @@ export const Snackbar = ({
 					>
 						<Box flex={1}>
 							{typeof children === "string" ? (
-								<Text fz={14} c={Colors.Text}>{children}</Text>
+								<Text fz={14} c={Colors.Text}>
+									{children}
+								</Text>
 							) : (
 								children
 							)}
 						</Box>
 						{action && (
-							<TouchableOpacity onPress={action.onPress}>
-								<Text fz={14} fw="600" c={Colors.Primary}>{action.label}</Text>
-							</TouchableOpacity>
+							<ButtonBase onPress={action.onPress}>
+								<Text fz={14} fw="bold" c={Colors.Primary}>
+									{action.label}
+								</Text>
+							</ButtonBase>
 						)}
 					</Box>
-				</TouchableOpacity>
+				</ButtonBase>
 			</Animated.View>
 		</Box>
 	);

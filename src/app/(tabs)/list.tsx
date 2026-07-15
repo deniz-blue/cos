@@ -1,29 +1,31 @@
 import { IconChevronDown, IconChevronUp, IconTrash } from "@tabler/icons-react-native";
 import { useState } from "react";
-import { FlatList, TouchableOpacity } from "react-native";
+import { FlatList } from "react-native";
 import { Box } from "../../components/base/Box";
-import { Button } from "../../components/base/Button";
+import { Button } from "../../components/base/button/Button";
+import { ButtonBase } from "../../components/base/ButtonBase";
 import { Card } from "../../components/base/Card";
 import { Loader } from "../../components/base/Loader";
 import { Modal } from "../../components/base/Modal";
 import { Text } from "../../components/base/Text";
+import { NoteEditModal } from "../../components/NoteEditModal";
+import { NoteSection } from "../../components/NoteSection";
+import { SocialsList } from "../../components/SocialsList";
 import { useListMutation } from "../../lib/useListMutation";
 import { ListItem, useListQuery } from "../../lib/useListQuery";
 import { Colors } from "../../theme/colors";
 import { FontSize, IconSize } from "../../theme/sizing";
-import { SocialsList } from "../../components/SocialsList";
-import { NoteSection } from "../../components/NoteSection";
-import { NoteEditModal } from "../../components/NoteEditModal";
 
 export default function ListPage() {
 	const query = useListQuery();
 	const data = query.data ?? [];
 
-	if (query.isPending) return (
-		<Box direction="column" align="center" justify="center" w="100%" h="100%">
-			<Loader size="large" />
-		</Box>
-	);
+	if (query.isPending)
+		return (
+			<Box direction="column" align="center" justify="center" w="100%" h="100%">
+				<Loader size="large" />
+			</Box>
+		);
 
 	return (
 		<FlatList
@@ -32,13 +34,17 @@ export default function ListPage() {
 			contentContainerStyle={{ padding: 16, gap: 12 }}
 			ListHeaderComponent={
 				<Box pt="sm" align="center">
-					<Text fz={FontSize.md} fw="500">Scanned Profiles</Text>
+					<Text fz={FontSize.md} fw="500">
+						Scanned Profiles
+					</Text>
 				</Box>
 			}
 			renderItem={({ item }) => <ListItemCard item={item} />}
 			ListEmptyComponent={() => (
 				<Box direction="column" align="center" justify="center" w="100%" mih={300} gap="md">
-					<Text fz={FontSize.md} fw="500">No profiles scanned yet</Text>
+					<Text fz={FontSize.md} fw="500">
+						No profiles scanned yet
+					</Text>
 					<Text fz={FontSize.sm} c={Colors.TextDimmed}>
 						Start scanning QR codes to see profiles here
 					</Text>
@@ -63,25 +69,32 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
 	return (
 		<>
 			<Card>
-				<TouchableOpacity onPress={() => setExpanded(e => !e)} activeOpacity={0.7}>
+				<ButtonBase onPress={() => setExpanded((e) => !e)}>
 					<Box direction="row" justify="space-between" align="center" gap="xs">
 						<Box>
-							<Text fz={FontSize.xs} c={Colors.TextDimmed}>{date}</Text>
+							<Text fz={FontSize.xs} c={Colors.TextDimmed}>
+								{date}
+							</Text>
 							<Box direction="row" gap="xs">
 								<Box justify="center" h={20}>
-									{expanded
-										? <IconChevronUp size={IconSize.xs} color={Colors.TextDimmed} />
-										: <IconChevronDown size={IconSize.xs} color={Colors.TextDimmed} />
-									}
+									{expanded ? (
+										<IconChevronUp size={IconSize.xs} color={Colors.TextDimmed} />
+									) : (
+										<IconChevronDown size={IconSize.xs} color={Colors.TextDimmed} />
+									)}
 								</Box>
 								<Box direction="column" gap={0}>
-									<Text fz={FontSize.md} fw="500">{item.payload.name}</Text>
-									<Text fz={FontSize.sm} c={Colors.TextDimmed}>{item.payload.details}</Text>
+									<Text fz={FontSize.md} fw="500">
+										{item.payload.name}
+									</Text>
+									<Text fz={FontSize.sm} c={Colors.TextDimmed}>
+										{item.payload.details}
+									</Text>
 								</Box>
 							</Box>
 						</Box>
 					</Box>
-				</TouchableOpacity>
+				</ButtonBase>
 				{expanded && (
 					<Box direction="column" gap="sm" pt="sm">
 						<NoteSection note={item.note} onEdit={() => setNoteDialog(true)} />
@@ -114,10 +127,7 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
 						This action cannot be undone.
 					</Text>
 					<Box direction="row" gap="sm" justify="flex-end">
-						<Button
-							variant="subtle"
-							onPress={() => setDeleteDialog(false)}
-						>
+						<Button variant="subtle" onPress={() => setDeleteDialog(false)}>
 							Cancel
 						</Button>
 						<Button

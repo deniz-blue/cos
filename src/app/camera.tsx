@@ -1,4 +1,10 @@
-import { IconAlertCircle, IconArrowLeft, IconCheck, IconInfoCircle, IconPencil } from "@tabler/icons-react-native";
+import {
+	IconAlertCircle,
+	IconArrowLeft,
+	IconCheck,
+	IconInfoCircle,
+	IconPencil,
+} from "@tabler/icons-react-native";
 import { BarcodeScanningResult, Camera, CameraView } from "expo-camera";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -6,7 +12,8 @@ import { ScrollView, Vibration } from "react-native";
 import Animated, { FadeInDown, FadeOutDown, LinearTransition } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Box } from "../components/base/Box";
-import { Button } from "../components/base/Button";
+import { Button } from "../components/base/button/Button";
+import { ButtonBase } from "../components/base/ButtonBase";
 import { Card } from "../components/base/Card";
 import { Loader } from "../components/base/Loader";
 import { ProgressBar } from "../components/base/ProgressBar";
@@ -56,64 +63,74 @@ export default function CameraScreen() {
 	const listQuery = useListQuery();
 	const mut = useListMutation();
 
-	const handleScan = useCallback(async (res: BarcodeScanningResult) => {
-		try {
-			const payload = parsePayload(res.data);
-			const result = await mut.mutateAsync({ type: "add", item: { payload, note: "" } });
-			return { ...result, payload };
-		} catch (e) {
-			console.log("Failed to parse QR code data", e);
-			return { type: "error" as const };
-		}
-	}, [mut]);
-
-	const onScan = useCallback(async (res: BarcodeScanningResult) => {
-		const result = await handleScan(res);
-
-		if (result.type === "added") {
-			Vibration.vibrate(50);
-			queue.pushScan(result.payload, result.type, result.id);
-		} else if (result.type === "exists") {
-			queue.pushScan(result.payload, result.type, result.id);
-		} else {
-			queue.pushError("Failed to parse QR code data");
-		}
-	}, [handleScan, queue]);
-
-	useEffect(() => void (async () => {
-		const { status } = await Camera.requestCameraPermissionsAsync();
-		setHasPermission(status === 'granted');
-	})(), []);
-
-	if (hasPermission === null) return (
-		<Box direction="column" align="center" justify="center" w="100%" h="100%">
-			<Loader size="large" />
-			<Text>
-				Requesting camera permissions...
-			</Text>
-		</Box>
+	const handleScan = useCallback(
+		async (res: BarcodeScanningResult) => {
+			try {
+				const payload = parsePayload(res.data);
+				const result = await mut.mutateAsync({ type: "add", item: { payload, note: "" } });
+				return { ...result, payload };
+			} catch (e) {
+				console.log("Failed to parse QR code data", e);
+				return { type: "error" as const };
+			}
+		},
+		[mut],
 	);
 
-	if (hasPermission === false) return (
-		<Box direction="column" align="center" justify="center" w="100%" h="100%" gap="md">
-			<Text fz={16} fw="500">
-				Camera access denied
-			</Text>
-			<Text fz={14} c={Colors.TextDimmed} ta="center">
-				Can't access camera to scan QR codes!
-			</Text>
-			<Button
-				variant="primary"
-				onPress={() => {
-					Camera.requestCameraPermissionsAsync().then(({ status }) => {
-						setHasPermission(status === "granted");
-					});
-				}}
-			>
-				Retry
-			</Button>
-		</Box>
+	const onScan = useCallback(
+		async (res: BarcodeScanningResult) => {
+			const result = await handleScan(res);
+
+			if (result.type === "added") {
+				Vibration.vibrate(50);
+				queue.pushScan(result.payload, result.type, result.id);
+			} else if (result.type === "exists") {
+				queue.pushScan(result.payload, result.type, result.id);
+			} else {
+				queue.pushError("Failed to parse QR code data");
+			}
+		},
+		[handleScan, queue],
 	);
+
+	useEffect(
+		() =>
+			void (async () => {
+				const { status } = await Camera.requestCameraPermissionsAsync();
+				setHasPermission(status === "granted");
+			})(),
+		[],
+	);
+
+	if (hasPermission === null)
+		return (
+			<Box direction="column" align="center" justify="center" w="100%" h="100%">
+				<Loader size="large" />
+				<Text>Requesting camera permissions...</Text>
+			</Box>
+		);
+
+	if (hasPermission === false)
+		return (
+			<Box direction="column" align="center" justify="center" w="100%" h="100%" gap="md">
+				<Text fz={16} fw="500">
+					Camera access denied
+				</Text>
+				<Text fz={14} c={Colors.TextDimmed} ta="center">
+					Can't access camera to scan QR codes!
+				</Text>
+				<Button
+					variant="primary"
+					onPress={() => {
+						Camera.requestCameraPermissionsAsync().then(({ status }) => {
+							setHasPermission(status === "granted");
+						});
+					}}
+				>
+					Retry
+				</Button>
+			</Box>
+		);
 
 	return (
 		<Box w="100%" h="100%" align="center" justify="center">
@@ -142,42 +159,39 @@ export default function CameraScreen() {
 				style={{ paddingBottom: insets.bottom + 16 }}
 			>
 				<Box w="100%" pointerEvents="box-none">
-					<ScrollView
-						contentContainerStyle={{ gap: 8 }}
-						showsVerticalScrollIndicator={false}
-					>
-						{queue.messages.map(message => (
+					<ScrollView contentContainerStyle={{ gap: 8 }} showsVerticalScrollIndicator={false}>
+						{queue.messages.map((message) => (
 							<Animated.View
 								key={message.id}
 								entering={FadeInDown.duration(300)}
 								exiting={FadeOutDown.duration(250)}
 								layout={LinearTransition.springify().mass(0.4)}
 							>
-								<Card onPress={() => queue.dismiss(message.id)} bg="rgba(0,0,0,0.8)">
-									<Box direction="row" align="center" justify="space-between" p="xs">
-										<Box direction="row" gap="xs" align="center">
-											{iconForType(message.type)}
-											<Text fw="500" c={Colors.TextDimmed}>
-												{labelForType(message.type)}
-											</Text>
-											<Text>
-												{messageText(message)}
-											</Text>
+								<ButtonBase onPress={() => queue.dismiss(message.id)}>
+									<Card bg="rgba(0,0,0,0.8)">
+										<Box direction="row" align="center" justify="space-between" p="xs">
+											<Box direction="row" gap="xs" align="center">
+												{iconForType(message.type)}
+												<Text fw="500" c={Colors.TextDimmed}>
+													{labelForType(message.type)}
+												</Text>
+												<Text>{messageText(message)}</Text>
+											</Box>
+											{message.type !== "error" && (
+												<Button
+													variant="subtle"
+													py={0}
+													leftSection={<IconPencil size={IconSize.xs} color={Colors.Primary} />}
+													onPress={() => {
+														setNoteItemId(message.itemId);
+													}}
+												>
+													Note
+												</Button>
+											)}
 										</Box>
-										{message.type !== "error" && (
-											<Button
-												variant="subtle"
-												py={0}
-												leftSection={<IconPencil size={IconSize.xs} color={Colors.Primary} />}
-												onPress={() => {
-													setNoteItemId(message.itemId);
-												}}
-											>
-												Note
-											</Button>
-										)}
-									</Box>
-								</Card>
+									</Card>
+								</ButtonBase>
 							</Animated.View>
 						))}
 					</ScrollView>
@@ -195,7 +209,7 @@ export default function CameraScreen() {
 
 			<NoteEditModal
 				visible={noteItemId !== null}
-				initialNote={listQuery.data?.find(i => i.id === noteItemId)?.note ?? ""}
+				initialNote={listQuery.data?.find((i) => i.id === noteItemId)?.note ?? ""}
 				onSave={(note) => {
 					if (noteItemId) {
 						mut.mutate({ type: "update", item: { id: noteItemId, note } });

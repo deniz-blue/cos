@@ -1,15 +1,20 @@
-import { IconExternalLink, IconHistory, IconQrcode, IconZoomScan } from "@tabler/icons-react-native";
+import {
+	IconExternalLink,
+	IconHistory,
+	IconQrcode,
+	IconZoomScan,
+} from "@tabler/icons-react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Platform, ScrollView } from "react-native";
 import { Box } from "../../components/base/Box";
-import { Button } from "../../components/base/Button";
+import { Button } from "../../components/base/button/Button";
 import { Loader } from "../../components/base/Loader";
 import { Text } from "../../components/base/Text";
 import { NoteEditModal } from "../../components/NoteEditModal";
 import { NoteSection } from "../../components/NoteSection";
 import { SocialsList } from "../../components/SocialsList";
-import { QR_BASE, serializePayload } from "../../lib/payload";
+import { serializePayload } from "../../lib/payload";
 import { useListMutation } from "../../lib/useListMutation";
 import { useListQuery } from "../../lib/useListQuery";
 import { Colors } from "../../theme/colors";
@@ -22,7 +27,7 @@ export default function ScannedProfilePage() {
 	const mut = useListMutation();
 	const [noteDialog, setNoteDialog] = useState(false);
 
-	const item = listQuery.data?.find(i => i.id === id);
+	const item = listQuery.data?.find((i) => i.id === id);
 
 	if (listQuery.isPending || !item) {
 		return (
@@ -40,14 +45,17 @@ export default function ScannedProfilePage() {
 	return (
 		<ScrollView contentContainerStyle={{ flexGrow: 1 }}>
 			<Box direction="column" align="center" justify="center" p="md" gap="md" w="100%" mih="100%">
-
 				<Box direction="column" align="center" gap="xs">
 					<Text c={Colors.TextDimmed} fz={FontSize.sm}>
 						Contact saved - find them later in history
 					</Text>
-					<Text fz={32} fw="600">{item.payload.name}</Text>
+					<Text fz={32} fw="600">
+						{item.payload.name}
+					</Text>
 					{!!item.payload.details && (
-						<Text fz={20} c={Colors.TextDimmed}>{item.payload.details}</Text>
+						<Text fz={20} c={Colors.TextDimmed}>
+							{item.payload.details}
+						</Text>
 					)}
 				</Box>
 
@@ -87,22 +95,15 @@ export default function ScannedProfilePage() {
 							variant="subtle"
 							leftSection={<IconExternalLink size={18} color={Colors.Primary} />}
 							onPress={() => {
-								const hash = serializePayload(item.payload).slice(QR_BASE.length + 1);
+								const appUrl = serializePayload(item.payload);
 								const playStoreUrl = "https://play.google.com/store/apps/details?id=lt.tsx.cos";
-								const intentUrl = `intent://cos.tsx.lt#${hash}#Intent;scheme=https;package=lt.tsx.cos;S.browser_fallback_url=${encodeURIComponent(playStoreUrl)};end`;
-								window.location.href = intentUrl;
+								window.location.href = appUrl;
+								setTimeout(() => {
+									window.location.href = playStoreUrl;
+								}, 2000);
 							}}
 						>
 							Open in app
-						</Button>
-						<Button
-							variant="subtle"
-							leftSection={<IconExternalLink size={18} color={Colors.Primary} />}
-							onPress={() => {
-								window.location.href = "https://play.google.com/store/apps/details?id=lt.tsx.cos";
-							}}
-						>
-							Get on Play Store
 						</Button>
 					</Box>
 				)}

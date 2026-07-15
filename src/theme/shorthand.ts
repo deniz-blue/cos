@@ -1,12 +1,12 @@
 import type { DimensionValue, ViewStyle } from "react-native";
-import { Spacing as SpacingVals, type SpacingName } from "./spacing";
-import { getThemeColor } from "./colors";
+import { resolveColor } from "./colors";
+import { Spacing as SpacingVals, type ThemeSpacing } from "./spacing";
 
-export type Spacing = SpacingName | DimensionValue;
+export type Spacing = ThemeSpacing | DimensionValue;
 
-const resolve = (v: Spacing | undefined): DimensionValue | undefined =>
-	v !== undefined ? (SpacingVals[v as SpacingName] ?? v) : undefined;
+const resolveSpacing = (v: Spacing): DimensionValue => SpacingVals[v as ThemeSpacing] ?? v;
 
+/** Shorthand layout props that map directly to ViewStyle properties. */
 export interface ShorthandStyleProps {
 	w?: DimensionValue;
 	h?: DimensionValue;
@@ -15,6 +15,7 @@ export interface ShorthandStyleProps {
 	mih?: DimensionValue;
 	mah?: DimensionValue;
 	aspectRatio?: ViewStyle["aspectRatio"];
+	zIndex?: ViewStyle["zIndex"];
 
 	pos?: ViewStyle["position"];
 	top?: DimensionValue;
@@ -48,7 +49,7 @@ export interface ShorthandStyleProps {
 
 	gap?: Spacing;
 	rowGap?: Spacing;
-
+	columnGap?: Spacing;
 
 	flex?: ViewStyle["flex"];
 	flexGrow?: ViewStyle["flexGrow"];
@@ -57,59 +58,88 @@ export interface ShorthandStyleProps {
 	align?: ViewStyle["alignItems"];
 	justify?: ViewStyle["justifyContent"];
 	wrap?: ViewStyle["flexWrap"];
+
+	/** Shorthand for position: absolute, top/right/bottom/left: 0 */
+	absoluteFill?: boolean;
 }
 
+type Entry = readonly [
+	prop: keyof ShorthandStyleProps,
+	style: keyof ViewStyle,
+	resolve?: (v: any) => any,
+];
+
+const MAP: Entry[] = [
+	// Dimensions
+	["w", "width"],
+	["h", "height"],
+	["miw", "minWidth"],
+	["maw", "maxWidth"],
+	["mih", "minHeight"],
+	["mah", "maxHeight"],
+	["aspectRatio", "aspectRatio"],
+	["pos", "position"],
+	["zIndex", "zIndex"],
+	["top", "top"],
+	["right", "right"],
+	["bottom", "bottom"],
+	["left", "left"],
+
+	// Padding, margin, gap (resolve named spacing tokens)
+	["p", "padding", resolveSpacing],
+	["px", "paddingHorizontal", resolveSpacing],
+	["py", "paddingVertical", resolveSpacing],
+	["pt", "paddingTop", resolveSpacing],
+	["pr", "paddingRight", resolveSpacing],
+	["pb", "paddingBottom", resolveSpacing],
+	["pl", "paddingLeft", resolveSpacing],
+	["m", "margin", resolveSpacing],
+	["mx", "marginHorizontal", resolveSpacing],
+	["my", "marginVertical", resolveSpacing],
+	["mt", "marginTop", resolveSpacing],
+	["mr", "marginRight", resolveSpacing],
+	["mb", "marginBottom", resolveSpacing],
+	["ml", "marginLeft", resolveSpacing],
+	["gap", "gap", resolveSpacing],
+	["rowGap", "rowGap", resolveSpacing],
+	["columnGap", "columnGap", resolveSpacing],
+
+	// Colors & radii
+	["bg", "backgroundColor", resolveColor],
+	["op", "opacity"],
+	["radius", "borderRadius"],
+	["rtl", "borderTopLeftRadius"],
+	["rtr", "borderTopRightRadius"],
+	["rbl", "borderBottomLeftRadius"],
+	["rbr", "borderBottomRightRadius"],
+
+	// Flexbox
+	["flex", "flex"],
+	["flexGrow", "flexGrow"],
+	["flexShrink", "flexShrink"],
+	["direction", "flexDirection"],
+	["align", "alignItems"],
+	["justify", "justifyContent"],
+	["wrap", "flexWrap"],
+];
+
+/** Convert shorthand layout props to a React Native ViewStyle object. */
 export const resolveShorthand = (props: ShorthandStyleProps): ViewStyle => {
 	const style: ViewStyle = {};
 
-	if (props.w !== undefined) style.width = props.w;
-	if (props.h !== undefined) style.height = props.h;
-	if (props.miw !== undefined) style.minWidth = props.miw;
-	if (props.maw !== undefined) style.maxWidth = props.maw;
-	if (props.mih !== undefined) style.minHeight = props.mih;
-	if (props.mah !== undefined) style.maxHeight = props.mah;
-	if (props.aspectRatio !== undefined) style.aspectRatio = props.aspectRatio;
+	for (const [prop, styleKey, resolve] of MAP) {
+		const value = props[prop];
+		if (value === undefined) continue;
+		(style as any)[styleKey] = resolve ? resolve(value) : value;
+	}
 
-	if (props.pos !== undefined) style.position = props.pos;
-	if (props.top !== undefined) style.top = props.top;
-	if (props.right !== undefined) style.right = props.right;
-	if (props.bottom !== undefined) style.bottom = props.bottom;
-	if (props.left !== undefined) style.left = props.left;
-
-	if (props.p !== undefined) style.padding = resolve(props.p);
-	if (props.px !== undefined) { const v = resolve(props.px); style.paddingHorizontal = v; }
-	if (props.py !== undefined) { const v = resolve(props.py); style.paddingVertical = v; }
-	if (props.pt !== undefined) style.paddingTop = resolve(props.pt);
-	if (props.pr !== undefined) style.paddingRight = resolve(props.pr);
-	if (props.pb !== undefined) style.paddingBottom = resolve(props.pb);
-	if (props.pl !== undefined) style.paddingLeft = resolve(props.pl);
-
-	if (props.m !== undefined) style.margin = resolve(props.m);
-	if (props.mx !== undefined) { const v = resolve(props.mx); style.marginHorizontal = v; }
-	if (props.my !== undefined) { const v = resolve(props.my); style.marginVertical = v; }
-	if (props.mt !== undefined) style.marginTop = resolve(props.mt);
-	if (props.mr !== undefined) style.marginRight = resolve(props.mr);
-	if (props.mb !== undefined) style.marginBottom = resolve(props.mb);
-	if (props.ml !== undefined) style.marginLeft = resolve(props.ml);
-
-	if (props.bg !== undefined) style.backgroundColor = getThemeColor(props.bg);
-	if (props.op !== undefined) style.opacity = props.op;
-	if (props.radius !== undefined) style.borderRadius = props.radius;
-	if (props.rtl !== undefined) style.borderTopLeftRadius = props.rtl;
-	if (props.rtr !== undefined) style.borderTopRightRadius = props.rtr;
-	if (props.rbl !== undefined) style.borderBottomLeftRadius = props.rbl;
-	if (props.rbr !== undefined) style.borderBottomRightRadius = props.rbr;
-
-	if (props.gap !== undefined) style.gap = resolve(props.gap) as number;
-	if (props.rowGap !== undefined) style.rowGap = resolve(props.rowGap) as number;
-
-	if (props.flex !== undefined) style.flex = props.flex;
-	if (props.flexGrow !== undefined) style.flexGrow = props.flexGrow;
-	if (props.flexShrink !== undefined) style.flexShrink = props.flexShrink;
-	if (props.direction !== undefined) style.flexDirection = props.direction;
-	if (props.align !== undefined) style.alignItems = props.align;
-	if (props.justify !== undefined) style.justifyContent = props.justify;
-	if (props.wrap !== undefined) style.flexWrap = props.wrap;
+	if (props.absoluteFill) {
+		style.position = "absolute";
+		style.top = 0;
+		style.right = 0;
+		style.bottom = 0;
+		style.left = 0;
+	}
 
 	return style;
 };

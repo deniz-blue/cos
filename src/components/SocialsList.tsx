@@ -1,12 +1,13 @@
 import { IconCopy, IconExternalLink } from "@tabler/icons-react-native";
 import * as Clipboard from "expo-clipboard";
-import { Linking, TouchableOpacity } from "react-native";
 import { useEffect, useRef, useState } from "react";
-import { Box, type BoxProps } from "./base/Box";
-import { Text } from "./base/Text";
+import { Linking } from "react-native";
 import { KnownSocials } from "../lib/socials";
 import { Colors } from "../theme/colors";
 import { FontSize, IconSize } from "../theme/sizing";
+import { Box, type BoxProps } from "./base/Box";
+import { ButtonBase } from "./base/ButtonBase";
+import { Text } from "./base/Text";
 
 interface SocialsListProps extends BoxProps {
 	socials: Record<string, string>;
@@ -23,13 +24,20 @@ const SocialItem = ({ k, v }: SocialItemProps) => {
 	const [copied, setCopied] = useState(false);
 	const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-	useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+	useEffect(
+		() => () => {
+			if (timer.current) clearTimeout(timer.current);
+		},
+		[],
+	);
 
 	const social = KnownSocials[k];
 	if (!social) {
 		return (
 			<Box direction="row" gap="xs" align="center">
-				<Text fz={FontSize.md} c={Colors.TextDimmed}>{k}:</Text>
+				<Text fz={FontSize.md} c={Colors.TextDimmed}>
+					{k}:
+				</Text>
 				<Text fz={FontSize.sm}>{v}</Text>
 			</Box>
 		);
@@ -50,23 +58,30 @@ const SocialItem = ({ k, v }: SocialItemProps) => {
 	};
 
 	return (
-		<TouchableOpacity onPress={handlePress} activeOpacity={0.7}>
+		<ButtonBase onPress={handlePress}>
 			<Box direction="row" align="center" p="sm" radius={8} bg={Colors.Dark7}>
 				<Icon size={IconSize.md} color={Colors.Text} />
 				<Box direction="row" flex={1} justify="space-between" align="center" ml="sm">
-					<Text fz={FontSize.sm} c={Colors.Text}>{social.title}</Text>
+					<Text fz={FontSize.sm} c={Colors.Text}>
+						{social.title}
+					</Text>
 					<Box direction="row" gap="xs" align="center">
-						<Text fz={FontSize.md} c={copied ? Colors.Primary : Colors.Text}>{v}</Text>
-						{copied
-							? <Text fz={FontSize.xs} c={Colors.Primary}>Copied!</Text>
-							: social.action === "copy"
-								? <IconCopy size={IconSize.xs} color={Colors.TextDimmed} />
-								: <IconExternalLink size={IconSize.xs} color={Colors.TextDimmed} />
-						}
+						<Text fz={FontSize.md} c={copied ? Colors.Primary : Colors.Text}>
+							{v}
+						</Text>
+						{copied ? (
+							<Text fz={FontSize.xs} c={Colors.Primary}>
+								Copied!
+							</Text>
+						) : social.action === "copy" ? (
+							<IconCopy size={IconSize.xs} color={Colors.TextDimmed} />
+						) : (
+							<IconExternalLink size={IconSize.xs} color={Colors.TextDimmed} />
+						)}
 					</Box>
 				</Box>
 			</Box>
-		</TouchableOpacity>
+		</ButtonBase>
 	);
 };
 
@@ -76,7 +91,9 @@ export const SocialsList = ({ socials, ...rest }: SocialsListProps) => {
 	if (entries.length === 0) {
 		return (
 			<Box align="center" {...rest}>
-				<Text fz={FontSize.md} c={Colors.TextDimmed}>No socials</Text>
+				<Text fz={FontSize.md} c={Colors.TextDimmed}>
+					No socials
+				</Text>
 			</Box>
 		);
 	}

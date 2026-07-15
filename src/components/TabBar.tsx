@@ -1,9 +1,9 @@
 import { CommonActions } from "expo-router/react-navigation";
-import { TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Box } from "./base/Box";
-import { Text } from "./base/Text";
 import { Colors } from "../theme/colors";
+import { Box } from "./base/Box";
+import { ButtonBase } from "./base/ButtonBase";
+import { Text } from "./base/Text";
 
 interface TabBarProps {
 	state: {
@@ -12,12 +12,15 @@ interface TabBarProps {
 		key: string;
 		routes: { key: string; name: string; params?: Record<string, any> }[];
 	};
-	descriptors: Record<string, {
-		options: {
-			title?: string;
-			tabBarIcon?: (props: { focused: boolean; color: string; size: number }) => React.ReactNode;
-		};
-	}>;
+	descriptors: Record<
+		string,
+		{
+			options: {
+				title?: string;
+				tabBarIcon?: (props: { focused: boolean; color: string; size: number }) => React.ReactNode;
+			};
+		}
+	>;
 	navigation: {
 		emit: (...args: any[]) => any;
 		dispatch: (action: any) => void;
@@ -61,17 +64,16 @@ export const TabBar = ({ state, descriptors, navigation }: TabBarProps) => {
 				const color = isFocused ? Colors.Primary : Colors.TextDimmed;
 
 				return (
-					<TouchableOpacity
+					<ButtonBase
 						key={route.key}
 						onPress={onPress}
-						activeOpacity={0.7}
 						style={{ flex: 1, alignItems: "center", gap: 2 }}
 					>
 						{options.tabBarIcon?.({ focused: isFocused, color, size: 24 })}
 						<Text fz={11} c={color}>
 							{options.title ?? route.name}
 						</Text>
-					</TouchableOpacity>
+					</ButtonBase>
 				);
 			})}
 		</Box>

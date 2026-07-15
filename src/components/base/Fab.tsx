@@ -1,9 +1,9 @@
-import { type ViewStyle } from "react-native";
-import { TouchableOpacity } from "react-native";
 import type { ReactNode } from "react";
-import { Box, type BoxProps } from "./Box";
-import { Text } from "./Text";
+import { type ViewStyle } from "react-native";
 import { Colors, getThemeColor } from "../../theme/colors";
+import { Box, type BoxProps } from "./Box";
+import { ButtonBase } from "./ButtonBase";
+import { Text } from "./Text";
 
 export interface FabProps extends BoxProps {
 	icon?: ReactNode;
@@ -23,10 +23,9 @@ const shadow: ViewStyle = {
 export const Fab = ({ icon, label, color = "Primary", onPress, style, ...rest }: FabProps) => {
 	const bg = getThemeColor(color);
 
-	if (label) {
-		return (
+	return (
+		<ButtonBase onPress={onPress}>
 			<Box
-				component={TouchableOpacity}
 				pos="absolute"
 				right={16}
 				bottom={16}
@@ -36,35 +35,14 @@ export const Fab = ({ icon, label, color = "Primary", onPress, style, ...rest }:
 				direction="row"
 				align="center"
 				px="md"
-				activeOpacity={0.7}
-				onPress={onPress}
 				style={[shadow, style]}
-				{...(rest as any)}
+				{...rest}
 			>
 				{icon}
-				<Text fz={14} fw="500" c={Colors.White} style={{ marginLeft: 8 }}>{label}</Text>
+				<Text fz={14} fw="bold" c={Colors.White} style={{ marginLeft: 8 }}>
+					{label}
+				</Text>
 			</Box>
-		);
-	}
-
-	return (
-		<Box
-			component={TouchableOpacity}
-			pos="absolute"
-			right={16}
-			bottom={16}
-			w={56}
-			h={56}
-			radius={28}
-			bg={bg}
-			align="center"
-			justify="center"
-			activeOpacity={0.7}
-			onPress={onPress}
-			style={[shadow, style]}
-			{...(rest as any)}
-		>
-			{icon}
-		</Box>
+		</ButtonBase>
 	);
 };

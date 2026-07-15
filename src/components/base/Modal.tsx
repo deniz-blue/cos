@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { KeyboardAvoidingView, Modal as RNModal, TouchableOpacity } from "react-native";
+import { KeyboardAvoidingView, Pressable, Modal as RNModal } from "react-native";
 import { Colors } from "../../theme/colors";
 import { Radius } from "../../theme/sizing";
 import { Box } from "./Box";
@@ -21,18 +21,17 @@ export const Modal = ({ visible, onDismiss, children }: ModalProps) => {
 			onRequestClose={onDismiss}
 			statusBarTranslucent
 		>
-			<TouchableOpacity
+			<Pressable
+				onPress={onDismiss}
 				style={{
 					flex: 1,
 					justifyContent: "center",
 					alignItems: "center",
 					backgroundColor: "#00000066",
 				}}
-				activeOpacity={1}
-				onPress={onDismiss}
 			>
-				<KeyboardAvoidingView>
-					<TouchableOpacity activeOpacity={1} onPress={() => {}}>
+				<KeyboardAvoidingView behavior="padding">
+					<Pressable onPress={(e) => e.stopPropagation()}>
 						<Box
 							bg={Colors.Background}
 							radius={Radius.Default}
@@ -49,9 +48,9 @@ export const Modal = ({ visible, onDismiss, children }: ModalProps) => {
 						>
 							{children}
 						</Box>
-					</TouchableOpacity>
+					</Pressable>
 				</KeyboardAvoidingView>
-			</TouchableOpacity>
+			</Pressable>
 		</RNModal>
 	);
 };

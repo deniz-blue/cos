@@ -1,10 +1,12 @@
-[{
-	"relation": ["delegate_permission/common.handle_all_urls"],
-	"target": {
-		"namespace": "android_app",
-		"package_name": "lt.tsx.cos",
-		"sha256_cert_fingerprints": [
-			"7C:C1:AE:62:AF:9A:47:A0:34:5B:3A:FD:9D:8A:F0:61:48:9B:D4:E5:78:8F:D3:55:E6:0C:57:AE:07:33:92:B3"
-		]
+[
+	{
+		"relation": ["delegate_permission/common.handle_all_urls"],
+		"target": {
+			"namespace": "android_app",
+			"package_name": "lt.tsx.cos",
+			"sha256_cert_fingerprints": [
+				"7C:C1:AE:62:AF:9A:47:A0:34:5B:3A:FD:9D:8A:F0:61:48:9B:D4:E5:78:8F:D3:55:E6:0C:57:AE:07:33:92:B3"
+			]
+		}
 	}
-}]
+]

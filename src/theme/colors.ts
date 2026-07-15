@@ -23,6 +23,9 @@ const Palette = {
 
 	Grape6: "#be4bdb",
 	Grape7: "#ae3ec9",
+
+	Red7: "#f03e3e",
+	Red8: "#e03131",
 };
 
 export const Colors = {
@@ -32,11 +35,14 @@ export const Colors = {
 	BackgroundInput: Palette.Dark6,
 	Primary: Palette.Grape7,
 	PrimaryLight: Palette.Grape6,
-	PrimaryTint: `${Palette.Grape7}33`,
+	PrimaryTint: Palette.Grape7 + "33", // Primary at ~20% opacity
 	Text: Palette.Dark0,
 	TextDimmed: Palette.Dark2,
 	Border: Palette.Dark8,
 
+	Danger: Palette.Red7 + "33",
+
+	// Named CSS colors
 	Red: "#f44336",
 	Pink: "#e91e63",
 	Purple: "#9C27B0",
@@ -60,16 +66,16 @@ export const Colors = {
 	Black: "#000000",
 } as const;
 
-export const ButtonTheme = {
-	default: { bg: Colors.BackgroundLight, text: Colors.Text },
-	primary: { bg: Colors.Primary, text: Colors.White },
-	subtle: { bg: "transparent", text: Colors.Primary },
-	danger: { bg: Colors.Red, text: Colors.White },
-} as const;
-
 export type ThemeColor = keyof typeof Colors | (string & {});
 
-export const getThemeColor = (value: ThemeColor): string =>
-	Colors[value as keyof typeof Colors] ?? value;
+/** Resolves a color name/key to its hex value. */
+export const getThemeColor = (value: ThemeColor): string => {
+	return Colors[value as keyof typeof Colors] || value;
+};
 
-
+/** Shorthand for `getThemeColor` — resolves both `"red"` and `"Red"` etc. */
+export const resolveColor = (color: string): string => {
+	const key = (color.charAt(0).toUpperCase() + color.slice(1)) as keyof typeof Colors;
+	if (key in Colors) return Colors[key]!;
+	return color;
+};

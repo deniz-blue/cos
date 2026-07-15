@@ -4,14 +4,14 @@ import { useState } from "react";
 import { Dimensions, LayoutChangeEvent, ScrollView } from "react-native";
 import QRCode from "react-qr-code";
 import { Box } from "../../components/base/Box";
-import { Button } from "../../components/base/Button";
+import { Button } from "../../components/base/button/Button";
 import { Fab } from "../../components/base/Fab";
 import { Loader } from "../../components/base/Loader";
 import { Text } from "../../components/base/Text";
 import { createPayload, isEmptyPayload, serializePayload } from "../../lib/payload";
 import { useProfileQuery } from "../../lib/useProfileQuery";
 import { Colors } from "../../theme/colors";
-import { FontSize } from "../../theme/sizing";
+import { FontSize, IconSize } from "../../theme/sizing";
 
 export default function QrPage() {
 	const router = useRouter();
@@ -23,7 +23,14 @@ export default function QrPage() {
 	const qrcode = serializePayload(profile.data ?? createPayload());
 	const hasData = profile.data && !isEmptyPayload(profile.data);
 
-	console.log("[home] profile.data:", profile.data, "isEmpty:", profile.data && isEmptyPayload(profile.data), "hasData:", hasData);
+	console.log(
+		"[home] profile.data:",
+		profile.data,
+		"isEmpty:",
+		profile.data && isEmptyPayload(profile.data),
+		"hasData:",
+		hasData,
+	);
 
 	return (
 		<Box w="100%" h="100%">
@@ -35,7 +42,13 @@ export default function QrPage() {
 
 					<Box
 						onLayout={onQrLayout}
-						style={{ width: "100%", aspectRatio: 1, position: "relative", borderRadius: 8, overflow: "hidden" }}
+						style={{
+							width: "100%",
+							aspectRatio: 1,
+							position: "relative",
+							borderRadius: 8,
+							overflow: "hidden",
+						}}
 					>
 						<Box
 							p="lg"
@@ -43,12 +56,7 @@ export default function QrPage() {
 							h="100%"
 							style={{ backgroundColor: "#ffffff", alignItems: "center", justifyContent: "center" }}
 						>
-							{qrSize > 0 && (
-								<QRCode
-									value={qrcode}
-									size={qrSize}
-								/>
-							)}
+							{qrSize > 0 && <QRCode value={qrcode} size={qrSize} />}
 						</Box>
 
 						{profile.isPending && (
@@ -70,7 +78,12 @@ export default function QrPage() {
 								w="100%"
 								h="100%"
 								p="md"
-								style={{ position: "absolute", top: 0, left: 0, backgroundColor: Colors.Background }}
+								style={{
+									position: "absolute",
+									top: 0,
+									left: 0,
+									backgroundColor: Colors.Background,
+								}}
 							>
 								<Text fz={16} fw="500" c={Colors.TextDimmed} ta="center">
 									You don't have details!
@@ -112,7 +125,7 @@ export default function QrPage() {
 			</ScrollView>
 
 			<Fab
-				icon={<IconZoomScan size={28} color={Colors.White} />}
+				icon={<IconZoomScan size={IconSize.lg} color={Colors.White} />}
 				label="Scan QR Code"
 				onPress={() => router.push("/camera")}
 			/>
