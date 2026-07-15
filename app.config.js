@@ -3,6 +3,16 @@ const DEV = process.env.APP_VARIANT === "development";
 const version = "1.0.3";
 const versionCode = 3;
 
+const blockedPermissions = [
+	"android.permission.INTERNET",
+	"android.permission.READ_EXTERNAL_STORAGE",
+	"android.permission.RECORD_AUDIO",
+	"android.permission.SYSTEM_ALERT_WINDOW",
+	"android.permission.WRITE_EXTERNAL_STORAGE",
+];
+
+console.log(`Expo Config: ${DEV ? "development" : "production"} variant`);
+
 export default {
 	/** @type {import("expo/config").ExpoConfig} */
 	expo: {
@@ -16,6 +26,7 @@ export default {
 			package: DEV ? "lt.tsx.cos.dev" : "lt.tsx.cos",
 			predictiveBackGestureEnabled: false,
 			versionCode,
+			blockedPermissions: DEV ? [] : blockedPermissions,
 			intentFilters: [
 				{
 					autoVerify: true,

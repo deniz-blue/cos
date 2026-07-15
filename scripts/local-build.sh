@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+set APP_VARIANT=production
+
 cd "$(dirname "$0")/.."
 
 # Load env from .env.local (KEYSTORE_PATH, KEYSTORE_PASSWORD, KEY_ALIAS).
