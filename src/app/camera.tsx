@@ -1,3 +1,4 @@
+import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import {
 	IconAlertCircle,
 	IconArrowLeft,
@@ -7,21 +8,21 @@ import {
 } from "@tabler/icons-react-native";
 import { Camera, CameraView } from "expo-camera";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ScrollView } from "react-native";
 import Animated, { FadeInDown, FadeOutDown, LinearTransition } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Box } from "../components/base/Box";
 import { Button } from "../components/base/button/Button";
+import { ButtonBase } from "../components/base/ButtonBase";
 import { Card } from "../components/base/Card";
 import { Loader } from "../components/base/Loader";
 import { ProgressBar } from "../components/base/ProgressBar";
 import { Text } from "../components/base/Text";
-import { NoteEditModal } from "../components/NoteEditModal";
+import { NoteEditSheet } from "../components/NoteEditSheet";
+import { ProfileSheetFromId } from "../components/ProfileSheet";
 import type { QueueMessage } from "../lib/use-scanner";
 import { useScanner } from "../lib/use-scanner";
-import { useListMutation } from "../lib/useListMutation";
-import { useListQuery } from "../lib/useListQuery";
 import { Colors } from "../theme/colors";
 import { FontSize, IconSize } from "../theme/sizing";
 
@@ -56,10 +57,10 @@ export default function CameraScreen() {
 	const insets = useSafeAreaInsets();
 	const router = useRouter();
 	const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-	const [noteItemId, setNoteItemId] = useState<string | null>(null);
-	const listQuery = useListQuery();
-	const mut = useListMutation();
 	const { messages, handleScan } = useScanner();
+	const noteRef = useRef<TrueSheet | null>(null);
+	const profileRef = useRef<TrueSheet | null>(null);
+	const [id, setId] = useState<string | null>(null);
 
 	useEffect(
 		() =>
@@ -117,6 +118,13 @@ export default function CameraScreen() {
 				<ProgressBar />
 			</Box>
 
+			{id && (
+				<>
+					<NoteEditSheet id={id} ref={noteRef} />
+					<ProfileSheetFromId id={id} ref={profileRef} />
+				</>
+			)}
+
 			<Box
 				pos="absolute"
 				w="100%"
@@ -131,37 +139,18 @@ export default function CameraScreen() {
 				<Box w="100%" pointerEvents="box-none">
 					<ScrollView contentContainerStyle={{ gap: 8 }} showsVerticalScrollIndicator={false}>
 						{messages.map((message) => (
-							<Animated.View
+							<Notification
 								key={message.id}
-								entering={FadeInDown.duration(300)}
-								exiting={FadeOutDown.duration(250)}
-								layout={LinearTransition.springify().mass(0.4)}
-							>
-								<Card bg="rgba(0,0,0,0.8)">
-									<Box direction="row" align="center" justify="space-between" p="xs">
-										<Box direction="row" gap="xs" align="center" accessible>
-											{iconForType(message.type)}
-											<Text fw="bold" c={Colors.TextDimmed}>
-												{labelForType(message.type)}
-											</Text>
-											<Text>{messageText(message)}</Text>
-										</Box>
-										{message.type !== "error" && (
-											<Button
-												variant="subtle"
-												py={0}
-												leftSection={<IconPencil size={IconSize.xs} color={Colors.Primary} />}
-												onPress={() => {
-													setNoteItemId(message.id);
-												}}
-												accessibilityLabel="Set Note"
-											>
-												Note
-											</Button>
-										)}
-									</Box>
-								</Card>
-							</Animated.View>
+								message={message}
+								onProfile={(id) => {
+									setId(id);
+									profileRef.current?.present();
+								}}
+								onNote={(id) => {
+									setId(id);
+									noteRef.current?.present();
+								}}
+							/>
 						))}
 					</ScrollView>
 				</Box>
@@ -175,18 +164,58 @@ export default function CameraScreen() {
 					</Button>
 				</Box>
 			</Box>
-
-			<NoteEditModal
-				visible={noteItemId !== null}
-				initialNote={listQuery.data?.find((i) => i.id === noteItemId)?.note ?? ""}
-				onSave={(note) => {
-					if (noteItemId) {
-						mut.mutate({ type: "update", item: { id: noteItemId, note } });
-					}
-					setNoteItemId(null);
-				}}
-				onDismiss={() => setNoteItemId(null)}
-			/>
 		</Box>
 	);
 }
+
+export const Notification = ({
+	message,
+	onNote,
+	onProfile,
+}: {
+	message: QueueMessage;
+	onProfile: (id: string) => void;
+	onNote: (id: string) => void;
+}) => {
+	return (
+		<Animated.View
+			key={message.id}
+			entering={FadeInDown.duration(300)}
+			exiting={FadeOutDown.duration(250)}
+			layout={LinearTransition.springify().mass(0.4)}
+		>
+			<Card bg="rgba(0,0,0,0.8)">
+				<Box direction="row" align="center" justify="space-between" p="xs">
+					<ButtonBase
+						onPress={() => onProfile(message.id)}
+						role="dialog"
+						accessibilityActions={[{ name: "activate", label: "View Profile" }]}
+						onAccessibilityAction={(e) => {
+							if (e.nativeEvent.actionName === "activate") onProfile(message.id);
+						}}
+					>
+						<Box direction="row" gap="xs" align="center">
+							{iconForType(message.type)}
+							<Text fw="bold" c={Colors.TextDimmed}>
+								{labelForType(message.type)}
+							</Text>
+							<Text>{messageText(message)}</Text>
+						</Box>
+					</ButtonBase>
+
+					{message.type !== "error" && (
+						<Button
+							variant="subtle"
+							py={0}
+							leftSection={<IconPencil size={IconSize.xs} color={Colors.Primary} />}
+							onPress={() => onNote(message.id)}
+							accessibilityLabel="Set Note"
+						>
+							Note
+						</Button>
+					)}
+				</Box>
+			</Card>
+		</Animated.View>
+	);
+};

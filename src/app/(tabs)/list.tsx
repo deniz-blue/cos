@@ -1,18 +1,14 @@
-import { IconChevronDown, IconChevronUp, IconTrash } from "@tabler/icons-react-native";
-import { useState } from "react";
+import { TrueSheet } from "@lodev09/react-native-true-sheet";
+import { useRef } from "react";
 import { FlatList } from "react-native";
 import { Box } from "../../components/base/Box";
-import { Button } from "../../components/base/button/Button";
 import { ButtonBase } from "../../components/base/ButtonBase";
 import { Card } from "../../components/base/Card";
 import { Loader } from "../../components/base/Loader";
-import { Modal } from "../../components/base/Modal";
 import { Text } from "../../components/base/Text";
-import { NoteEditModal } from "../../components/NoteEditModal";
-import { NoteSection } from "../../components/NoteSection";
-import { SocialsList } from "../../components/SocialsList";
+import { ProfileSheet } from "../../components/ProfileSheet";
 import { useA11yAutoFocus } from "../../hooks/useA11yAutoFocus";
-import { useListMutation } from "../../lib/useListMutation";
+import { KnownSocials } from "../../lib/socials";
 import { ListItem, useListQuery } from "../../lib/useListQuery";
 import { Colors } from "../../theme/colors";
 import { FontSize, IconSize } from "../../theme/sizing";
@@ -25,6 +21,7 @@ export default function ListPage() {
 	return (
 		<FlatList
 			data={data}
+			role="list"
 			keyExtractor={(item) => item.id}
 			contentContainerStyle={{ padding: 16, gap: 12 }}
 			ListHeaderComponent={
@@ -59,93 +56,34 @@ export default function ListPage() {
 }
 
 const ListItemCard = ({ item }: { item: ListItem }) => {
-	const [expanded, setExpanded] = useState(false);
-	const [noteDialog, setNoteDialog] = useState(false);
-	const [deleteDialog, setDeleteDialog] = useState(false);
-	const mut = useListMutation();
+	const ref = useRef<TrueSheet | null>(null);
 	const date = new Date(item.created_at).toLocaleString();
 
-	const saveNote = (note: string) => {
-		mut.mutate({ type: "update", item: { id: item.id, note } });
-		setNoteDialog(false);
-	};
-
 	return (
-		<>
+		<ButtonBase onPress={() => ref.current?.present()} role="listitem">
 			<Card>
-				<ButtonBase onPress={() => setExpanded((e) => !e)}>
-					<Box direction="row" justify="space-between" align="center" gap="xs">
-						<Box>
-							<Text fz={FontSize.xs} c={Colors.TextDimmed} aria-hidden>
-								{date}
+				<Box>
+					<Box direction="column" gap={0}>
+						<Box direction="row" justify="space-between">
+							<Text fz={FontSize.md} fw="bold">
+								{item.payload.name}
 							</Text>
-							<Box direction="row" gap="xs">
-								<Box justify="center" h={20}>
-									{expanded ? (
-										<IconChevronUp size={IconSize.xs} color={Colors.TextDimmed} />
-									) : (
-										<IconChevronDown size={IconSize.xs} color={Colors.TextDimmed} />
-									)}
-								</Box>
-								<Box direction="column" gap={0}>
-									<Text fz={FontSize.md} fw="bold">
-										{item.payload.name}
-									</Text>
-									<Text fz={FontSize.sm} c={Colors.TextDimmed}>
-										{item.payload.details}
-									</Text>
-								</Box>
+							<Box direction="row">
+								{Object.entries(item.payload.socials).map(([k]) => {
+									const { icon: Icon } = KnownSocials[k];
+									return <Icon key={k} size={IconSize.xs} color={Colors.Text} />;
+								})}
 							</Box>
 						</Box>
+						<Text fz={FontSize.sm}>{item.payload.details}</Text>
 					</Box>
-				</ButtonBase>
-				{expanded && (
-					<Box direction="column" gap="sm" pt="sm">
-						<NoteSection note={item.note} onEdit={() => setNoteDialog(true)} />
-
-						<SocialsList socials={item.payload.socials} />
-
-						<Button
-							variant="subtle"
-							color={Colors.Red}
-							leftSection={<IconTrash size={IconSize.xs} color={Colors.Red} />}
-							onPress={() => setDeleteDialog(true)}
-						>
-							Delete
-						</Button>
-					</Box>
-				)}
-			</Card>
-
-			<NoteEditModal
-				visible={noteDialog}
-				initialNote={item.note}
-				onSave={saveNote}
-				onDismiss={() => setNoteDialog(false)}
-			/>
-
-			<Modal visible={deleteDialog} onDismiss={() => setDeleteDialog(false)}>
-				<Box gap="md">
-					<Text fz={FontSize.md}>Delete this profile?</Text>
-					<Text fz={FontSize.sm} c={Colors.TextDimmed}>
-						This action cannot be undone.
+					<Text fz={FontSize.xs} c={Colors.TextDimmed} aria-hidden>
+						{date}
 					</Text>
-					<Box direction="row" gap="sm" justify="flex-end">
-						<Button variant="subtle" onPress={() => setDeleteDialog(false)}>
-							Cancel
-						</Button>
-						<Button
-							variant="danger"
-							onPress={() => {
-								mut.mutate({ type: "delete", id: item.id });
-								setDeleteDialog(false);
-							}}
-						>
-							Delete
-						</Button>
-					</Box>
 				</Box>
-			</Modal>
-		</>
+
+				<ProfileSheet item={item} ref={ref} />
+			</Card>
+		</ButtonBase>
 	);
 };

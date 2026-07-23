@@ -5,17 +5,14 @@ import {
 	IconZoomScan,
 } from "@tabler/icons-react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
 import { Platform, ScrollView } from "react-native";
 import { Box } from "../../components/base/Box";
 import { Button } from "../../components/base/button/Button";
 import { Loader } from "../../components/base/Loader";
 import { Text } from "../../components/base/Text";
-import { NoteEditModal } from "../../components/NoteEditModal";
 import { NoteSection } from "../../components/NoteSection";
 import { SocialsList } from "../../components/SocialsList";
 import { serializePayload } from "../../lib/payload";
-import { useListMutation } from "../../lib/useListMutation";
 import { useListQuery } from "../../lib/useListQuery";
 import { Colors } from "../../theme/colors";
 import { FontSize } from "../../theme/sizing";
@@ -24,8 +21,6 @@ export default function ScannedProfilePage() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const router = useRouter();
 	const listQuery = useListQuery();
-	const mut = useListMutation();
-	const [noteDialog, setNoteDialog] = useState(false);
 
 	const item = listQuery.data?.find((i) => i.id === id);
 
@@ -36,11 +31,6 @@ export default function ScannedProfilePage() {
 			</Box>
 		);
 	}
-
-	const saveNote = (note: string) => {
-		mut.mutate({ type: "update", item: { id: item.id, note } });
-		setNoteDialog(false);
-	};
 
 	return (
 		<ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -62,7 +52,7 @@ export default function ScannedProfilePage() {
 				<SocialsList socials={item.payload.socials} w="100%" style={{ maxWidth: 400 }} />
 
 				<Box w="100%" style={{ maxWidth: 400 }}>
-					<NoteSection note={item.note} onEdit={() => setNoteDialog(true)} />
+					<NoteSection id={item.id} />
 				</Box>
 
 				<Box direction="row" gap="sm" justify="center">
@@ -108,13 +98,6 @@ export default function ScannedProfilePage() {
 					</Box>
 				)}
 			</Box>
-
-			<NoteEditModal
-				visible={noteDialog}
-				initialNote={item.note}
-				onSave={saveNote}
-				onDismiss={() => setNoteDialog(false)}
-			/>
 		</ScrollView>
 	);
 }

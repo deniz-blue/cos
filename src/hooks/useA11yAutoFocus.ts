@@ -1,12 +1,13 @@
 import { useFocusEffect } from "expo-router";
 import { useCallback, useRef } from "react";
-import { AccessibilityInfo, findNodeHandle } from "react-native";
+import { AccessibilityInfo, findNodeHandle, Platform } from "react-native";
 
 export const useA11yAutoFocus = () => {
 	const ref = useRef(null);
 
 	useFocusEffect(
 		useCallback(() => {
+			if (Platform.OS === "web") return;
 			if (!ref.current) return;
 			const node = findNodeHandle(ref.current);
 			if (!node) return;

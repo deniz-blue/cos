@@ -1,4 +1,4 @@
-import { IconCopy, IconExternalLink } from "@tabler/icons-react-native";
+import { IconCopy, IconCopyCheck, IconExternalLink } from "@tabler/icons-react-native";
 import * as Clipboard from "expo-clipboard";
 import { useEffect, useRef, useState } from "react";
 import { Linking } from "react-native";
@@ -46,19 +46,43 @@ const SocialItem = ({ k, v }: SocialItemProps) => {
 	const Icon = social.icon;
 	const url = social.url.replace("$", v);
 
+	const handleCopy = async () => {
+		await Clipboard.setStringAsync(v);
+		setCopied(true);
+		if (timer.current) clearTimeout(timer.current);
+		timer.current = setTimeout(() => setCopied(false), COPIED_DURATION);
+	};
+
 	const handlePress = () => {
 		if (social.action === "copy") {
-			Clipboard.setStringAsync(v);
-			setCopied(true);
-			if (timer.current) clearTimeout(timer.current);
-			timer.current = setTimeout(() => setCopied(false), COPIED_DURATION);
+			handleCopy();
 		} else {
 			Linking.openURL(url);
 		}
 	};
 
+	const handleLongPress = () => {
+		if (social.action !== "copy") handleCopy();
+	};
+
 	return (
-		<ButtonBase onPress={handlePress}>
+		<ButtonBase
+			onPress={handlePress}
+			onLongPress={handleLongPress}
+			accessibilityLabel={`${social.title} username: ${v}`}
+			accessibilityActions={
+				social.action === "copy"
+					? [{ name: "activate", label: `Copy username` }]
+					: [
+							{ name: "activate", label: `Open in ${social.title}` },
+							{ name: "longpress", label: "Copy username" },
+						]
+			}
+			onAccessibilityAction={(e) => {
+				if (e.nativeEvent.actionName === "activate") handlePress();
+				if (e.nativeEvent.actionName === "longpress") handleLongPress();
+			}}
+		>
 			<Box direction="row" align="center" p="sm" radius={8} bg={Colors.Dark7}>
 				<Icon size={IconSize.md} color={Colors.Text} />
 				<Box direction="row" flex={1} justify="space-between" align="center" ml="sm">
@@ -70,9 +94,7 @@ const SocialItem = ({ k, v }: SocialItemProps) => {
 							{v}
 						</Text>
 						{copied ? (
-							<Text fz={FontSize.xs} c={Colors.Primary}>
-								Copied!
-							</Text>
+							<IconCopyCheck size={IconSize.xs} color={Colors.Primary} />
 						) : social.action === "copy" ? (
 							<IconCopy size={IconSize.xs} color={Colors.TextDimmed} />
 						) : (
@@ -99,7 +121,7 @@ export const SocialsList = ({ socials, ...rest }: SocialsListProps) => {
 	}
 
 	return (
-		<Box direction="column" gap="sm" {...rest}>
+		<Box direction="column" gap="md" {...rest}>
 			{entries.map(([k, v]) => (
 				<SocialItem key={k} k={k} v={v} />
 			))}

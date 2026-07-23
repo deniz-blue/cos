@@ -1,6 +1,6 @@
+import { ComponentProps } from "react";
 import { Pressable } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { ComponentProps } from "react";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -28,7 +28,6 @@ export const ButtonBase = ({ style, ...props }: ButtonBaseProps) => {
 	return (
 		<AnimatedPressable
 			role="button"
-			accessibilityRole="button"
 			onPressIn={handlePressIn}
 			onPressOut={handlePressOut}
 			style={[animatedStyle, style]}
