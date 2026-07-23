@@ -11,6 +11,7 @@ import { Text } from "../../components/base/Text";
 import { NoteEditModal } from "../../components/NoteEditModal";
 import { NoteSection } from "../../components/NoteSection";
 import { SocialsList } from "../../components/SocialsList";
+import { useA11yAutoFocus } from "../../hooks/useA11yAutoFocus";
 import { useListMutation } from "../../lib/useListMutation";
 import { ListItem, useListQuery } from "../../lib/useListQuery";
 import { Colors } from "../../theme/colors";
@@ -19,13 +20,7 @@ import { FontSize, IconSize } from "../../theme/sizing";
 export default function ListPage() {
 	const query = useListQuery();
 	const data = query.data ?? [];
-
-	if (query.isPending)
-		return (
-			<Box direction="column" align="center" justify="center" w="100%" h="100%">
-				<Loader size="large" />
-			</Box>
-		);
+	const a11yRef = useA11yAutoFocus();
 
 	return (
 		<FlatList
@@ -33,16 +28,25 @@ export default function ListPage() {
 			keyExtractor={(item) => item.id}
 			contentContainerStyle={{ padding: 16, gap: 12 }}
 			ListHeaderComponent={
-				<Box pt="sm" align="center">
-					<Text fz={FontSize.md} fw="500">
-						Scanned Profiles
+				<Box pt="sm" align="center" justify="center" direction="row">
+					<Text fz={FontSize.md} fw="bold" role="heading" ref={a11yRef}>
+						History
 					</Text>
+					{query.isPending && <Loader size="small" />}
 				</Box>
 			}
 			renderItem={({ item }) => <ListItemCard item={item} />}
 			ListEmptyComponent={() => (
-				<Box direction="column" align="center" justify="center" w="100%" mih={300} gap="md">
-					<Text fz={FontSize.md} fw="500">
+				<Box
+					direction="column"
+					align="center"
+					justify="center"
+					w="100%"
+					mih={300}
+					gap="xs"
+					accessible
+				>
+					<Text fz={FontSize.md} fw="bold">
 						No profiles scanned yet
 					</Text>
 					<Text fz={FontSize.sm} c={Colors.TextDimmed}>
@@ -84,7 +88,7 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
 									)}
 								</Box>
 								<Box direction="column" gap={0}>
-									<Text fz={FontSize.md} fw="500">
+									<Text fz={FontSize.md} fw="bold">
 										{item.payload.name}
 									</Text>
 									<Text fz={FontSize.sm} c={Colors.TextDimmed}>

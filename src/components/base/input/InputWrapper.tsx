@@ -1,7 +1,7 @@
 import { type ReactNode } from "react";
 import { Colors } from "../../../theme/colors";
 import { FontSize } from "../../../theme/sizing";
-import { Box } from "../Box";
+import { Box, BoxProps } from "../Box";
 import { Text, type TextProps } from "../Text";
 
 export interface InputWrapperProps {
@@ -11,6 +11,7 @@ export interface InputWrapperProps {
 	required?: boolean;
 	labelProps?: Omit<TextProps, "children">;
 	descriptionProps?: Omit<TextProps, "children">;
+	wrapperProps?: Omit<BoxProps, "children">;
 	errorProps?: Omit<TextProps, "children">;
 	children?: ReactNode;
 }
@@ -23,6 +24,7 @@ export const InputWrapper = ({
 	labelProps,
 	descriptionProps,
 	errorProps,
+	wrapperProps,
 	children,
 }: InputWrapperProps) => {
 	const labelNode = label && (
@@ -41,7 +43,7 @@ export const InputWrapper = ({
 	return (
 		<Box gap="xs">
 			{(label || description) && (
-				<Box gap={0}>
+				<Box gap={0} {...wrapperProps}>
 					{labelNode}
 					{descriptionNode}
 				</Box>

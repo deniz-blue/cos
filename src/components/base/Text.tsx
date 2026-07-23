@@ -12,6 +12,7 @@ export interface TextProps extends RNTextProps {
 	tt?: TextStyle["textTransform"];
 	tdl?: TextStyle["textDecorationLine"];
 	lh?: number;
+	ref?: React.Ref<RNText>;
 }
 
 export const Text = (props: TextProps) => {

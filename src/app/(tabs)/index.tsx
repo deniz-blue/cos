@@ -1,13 +1,14 @@
 import { IconPencil, IconZoomScan } from "@tabler/icons-react-native";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Dimensions, LayoutChangeEvent, ScrollView } from "react-native";
+import { LayoutChangeEvent, ScrollView } from "react-native";
 import QRCode from "react-qr-code";
 import { Box } from "../../components/base/Box";
 import { Button } from "../../components/base/button/Button";
 import { Fab } from "../../components/base/Fab";
 import { Loader } from "../../components/base/Loader";
 import { Text } from "../../components/base/Text";
+import { useA11yAutoFocus } from "../../hooks/useA11yAutoFocus";
 import { createPayload, isEmptyPayload, serializePayload } from "../../lib/payload";
 import { useProfileQuery } from "../../lib/useProfileQuery";
 import { Colors } from "../../theme/colors";
@@ -17,26 +18,18 @@ export default function QrPage() {
 	const router = useRouter();
 	const profile = useProfileQuery();
 	const [qrSize, setQrSize] = useState(0);
+	const a11yRef = useA11yAutoFocus();
 
 	const onQrLayout = (e: LayoutChangeEvent) => setQrSize(e.nativeEvent.layout.width - 48);
 
 	const qrcode = serializePayload(profile.data ?? createPayload());
 	const hasData = profile.data && !isEmptyPayload(profile.data);
 
-	console.log(
-		"[home] profile.data:",
-		profile.data,
-		"isEmpty:",
-		profile.data && isEmptyPayload(profile.data),
-		"hasData:",
-		hasData,
-	);
-
 	return (
 		<Box w="100%" h="100%">
-			<ScrollView contentContainerStyle={{ minHeight: Dimensions.get("window").height - 64 - 16 }}>
+			<ScrollView>
 				<Box direction="column" align="center" justify="center" px="md" py="xl" gap="md">
-					<Text fw="600" ta="center">
+					<Text fw="bold" role="heading" ta="center" ref={a11yRef}>
 						Your QR Code
 					</Text>
 
@@ -85,7 +78,7 @@ export default function QrPage() {
 									backgroundColor: Colors.Background,
 								}}
 							>
-								<Text fz={16} fw="500" c={Colors.TextDimmed} ta="center">
+								<Text fz={FontSize.md} fw="bold" c={Colors.TextDimmed} ta="center">
 									You don't have details!
 								</Text>
 							</Box>
@@ -110,15 +103,11 @@ export default function QrPage() {
 						</Box>
 					)}
 
-					<Box mih={48} align="center" justify="center">
+					<Box align="center" justify="center">
 						<Text fz={FontSize.sm} c={Colors.TextDimmed} ta="center">
-							Share socials with others.
+							This app allows you to use QR codes to share your social media usernames to people you meet without hassle.
 							{"\n"}
-							Sharing is done via QR codes; works offline.
-							{"\n"}
-							Scanned profiles get saved to your history immediately.
-							{"\n"}
-							You can add notes to them and view them later.
+							Scan QR codes of people you meet which will be saved to your history to view later.
 						</Text>
 					</Box>
 				</Box>

@@ -23,7 +23,7 @@ import { useScanner } from "../lib/use-scanner";
 import { useListMutation } from "../lib/useListMutation";
 import { useListQuery } from "../lib/useListQuery";
 import { Colors } from "../theme/colors";
-import { IconSize } from "../theme/sizing";
+import { FontSize, IconSize } from "../theme/sizing";
 
 const iconForType = (type: QueueMessage["type"]) => {
 	switch (type) {
@@ -81,10 +81,10 @@ export default function CameraScreen() {
 	if (hasPermission === false)
 		return (
 			<Box direction="column" align="center" justify="center" w="100%" h="100%" gap="md">
-				<Text fz={16} fw="500">
+				<Text fz={FontSize.md} fw="bold">
 					Camera access denied
 				</Text>
-				<Text fz={14} c={Colors.TextDimmed} ta="center">
+				<Text fz={FontSize.sm} c={Colors.TextDimmed} ta="center">
 					Can't access camera to scan QR codes!
 				</Text>
 				<Button
@@ -109,6 +109,8 @@ export default function CameraScreen() {
 				}}
 				facing="back"
 				style={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0 }}
+				accessible
+				accessibilityLabel="QR Code Scanner Active"
 			/>
 
 			<Box style={{ position: "absolute", top: 0, left: 0, width: "100%" }} pointerEvents="none">
@@ -139,7 +141,7 @@ export default function CameraScreen() {
 									<Box direction="row" align="center" justify="space-between" p="xs">
 										<Box direction="row" gap="xs" align="center" accessible>
 											{iconForType(message.type)}
-											<Text fw="500" c={Colors.TextDimmed}>
+											<Text fw="bold" c={Colors.TextDimmed}>
 												{labelForType(message.type)}
 											</Text>
 											<Text>{messageText(message)}</Text>
@@ -166,7 +168,7 @@ export default function CameraScreen() {
 				<Box>
 					<Button
 						variant="primary"
-						leftSection={<IconArrowLeft size={18} color={Colors.White} />}
+						leftSection={<IconArrowLeft size={IconSize.lg} color={Colors.White} />}
 						onPress={() => router.replace("/")}
 					>
 						Back

@@ -1,43 +1,24 @@
+import type { BottomTabBarProps } from "expo-router/build/react-navigation/bottom-tabs";
 import { CommonActions } from "expo-router/react-navigation";
+import { startTransition } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "../theme/colors";
 import { Box } from "./base/Box";
 import { ButtonBase } from "./base/ButtonBase";
 import { Text } from "./base/Text";
 
-interface TabBarProps {
-	state: {
-		index: number;
-		routeNames: string[];
-		key: string;
-		routes: { key: string; name: string; params?: Record<string, any> }[];
-	};
-	descriptors: Record<
-		string,
-		{
-			options: {
-				title?: string;
-				tabBarIcon?: (props: { focused: boolean; color: string; size: number }) => React.ReactNode;
-			};
-		}
-	>;
-	navigation: {
-		emit: (...args: any[]) => any;
-		dispatch: (action: any) => void;
-	};
-}
-
-export const TabBar = ({ state, descriptors, navigation }: TabBarProps) => {
+export const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
 	const insets = useSafeAreaInsets();
 
 	return (
 		<Box
 			direction="row"
+			role="tablist"
 			bg={Colors.Dark8}
 			py="xs"
 			px="sm"
 			style={{
-				paddingBottom: insets.bottom + 4,
+				paddingBottom: insets.bottom,
 				borderTopWidth: 1,
 				borderTopColor: Colors.Dark5,
 			}}
@@ -53,12 +34,14 @@ export const TabBar = ({ state, descriptors, navigation }: TabBarProps) => {
 						canPreventDefault: true,
 					});
 
-					if (!event.defaultPrevented) {
+					if (event.defaultPrevented) return;
+
+					startTransition(() => {
 						navigation.dispatch({
 							...CommonActions.navigate(route.name, route.params),
 							target: state.key,
 						});
-					}
+					});
 				};
 
 				const color = isFocused ? Colors.Primary : Colors.TextDimmed;
@@ -68,11 +51,17 @@ export const TabBar = ({ state, descriptors, navigation }: TabBarProps) => {
 						key={route.key}
 						onPress={onPress}
 						style={{ flex: 1, alignItems: "center", gap: 2 }}
+						role="tab"
+						accessibilityState={{
+							selected: isFocused,
+						}}
 					>
-						{options.tabBarIcon?.({ focused: isFocused, color, size: 24 })}
-						<Text fz={11} c={color}>
-							{options.title ?? route.name}
-						</Text>
+						<Box py="sm" align="center">
+							{options.tabBarIcon?.({ focused: isFocused, color, size: 24 })}
+							<Text fz={11} c={color}>
+								{options.title ?? route.name}
+							</Text>
+						</Box>
 					</ButtonBase>
 				);
 			})}

@@ -83,14 +83,14 @@ export const serializePayload = (payload: Payload): string => {
 };
 
 export const sanitizePayload = (payload: Payload): Payload => {
-	const sanitize = (s: string) => s.trim().replace(/[|:,]/g, "");
+	const sanitize = (s: string) => s.replace(/[|:,]/g, "");
 
 	return {
 		name: sanitize(payload.name),
 		socials: Object.fromEntries(
 			Object.entries(payload.socials)
 				.filter(([, v]) => !!v.trim())
-				.map(([k, v]) => [k, sanitize(v)]),
+				.map(([k, v]) => [k, sanitize(v).trim()]),
 		),
 		details: sanitize(payload.details),
 	};

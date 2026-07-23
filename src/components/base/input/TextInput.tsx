@@ -1,4 +1,4 @@
-import { useCallback, useState, type ReactNode } from "react";
+import { useCallback, useId, useState, type ReactNode } from "react";
 import { TextInput as RNTextInput, type TextInputProps as RNTextInputProps } from "react-native";
 import { Colors } from "../../../theme/colors";
 import { ControlHeight, FontSize } from "../../../theme/sizing";
@@ -35,6 +35,7 @@ export const TextInput = ({
 	baseProps: { style: baseStyle, ...baseProps } = {},
 	...rest
 }: TextInputProps) => {
+	const id = useId();
 	const inputSize = INPUT_SIZES[size];
 	const [focused, setFocused] = useState(false);
 
@@ -73,11 +74,24 @@ export const TextInput = ({
 			{...rest}
 			onFocus={handleFocus}
 			onBlur={handleBlur}
+			accessibilityLabelledBy={id}
+			accessibilityLabel={typeof label === "string" ? label : undefined}
+			accessibilityHint={typeof description === "string" ? description : undefined}
 		/>
 	);
 
 	return (
-		<InputWrapper label={label} description={description} error={error} required={required}>
+		<InputWrapper
+			label={label}
+			description={description}
+			error={error}
+			required={required}
+			labelProps={{ accessible: false, importantForAccessibility: "no" }}
+			descriptionProps={{ accessible: false, importantForAccessibility: "no" }}
+			wrapperProps={
+				description ? { accessible: true } : { importantForAccessibility: "no", accessible: false }
+			}
+		>
 			<InputBase
 				focused={focused}
 				size={size}

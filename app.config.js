@@ -1,7 +1,7 @@
 const DEV = process.env.APP_VARIANT === "development";
 
-const version = "1.0.4";
-const versionCode = 4;
+const version = "1.0.5";
+const versionCode = 5;
 
 const blockedPermissions = [
 	"android.permission.INTERNET",
@@ -23,8 +23,14 @@ export default {
 		scheme: "cos",
 		userInterfaceStyle: "dark",
 		android: {
-			package: DEV ? "lt.tsx.cos.dev" : "lt.tsx.cos",
-			predictiveBackGestureEnabled: false,
+			package: DEV ? "lt.tsx.dev.cos" : "lt.tsx.cos",
+			predictiveBackGestureEnabled: true,
+			adaptiveIcon: {
+				backgroundColor: "#061620",
+				backgroundImage: "./public/cos-bg.png",
+				foregroundImage: "./public/cos-fg.png",
+				monochromeImage: "./public/cos-fg.png",
+			},
 			versionCode,
 			blockedPermissions: DEV ? [] : blockedPermissions,
 			intentFilters: [

@@ -8,6 +8,7 @@ import { ButtonBase } from "../../components/base/ButtonBase";
 import { TextInput } from "../../components/base/input/TextInput";
 import { Loader } from "../../components/base/Loader";
 import { Text } from "../../components/base/Text";
+import { useA11yAutoFocus } from "../../hooks/useA11yAutoFocus";
 import { createPayload, Payload, sanitizePayload } from "../../lib/payload";
 import { KnownSocials } from "../../lib/socials";
 import { useProfileMutation, useProfileQuery } from "../../lib/useProfileQuery";
@@ -22,6 +23,7 @@ export default function ProfilePage() {
 	);
 	const payload = p ? sanitizePayload(p) : null;
 	const saveTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+	const a11yRef = useA11yAutoFocus();
 
 	useEffect(() => {
 		setLocalPayload((p) => p || (payloadQuery.data ?? createPayload()));
@@ -50,8 +52,8 @@ export default function ProfilePage() {
 						<ButtonBase onPress={() => router.push("..")} aria-label="Back">
 							<IconArrowLeft size={24} color={Colors.Text} />
 						</ButtonBase>
-						<Text fz={FontSize.lg} fw="500">
-							My QR Code
+						<Text fz={FontSize.lg} fw="bold" role="heading" ref={a11yRef}>
+							Edit Profile
 						</Text>
 						{mut.isPending && <Loader size="small" />}
 					</Box>
@@ -74,7 +76,6 @@ export default function ProfilePage() {
 						<Box gap="md">
 							<TextInput
 								label="Name"
-								aria-label="Name"
 								description="Enter your name"
 								required
 								value={payload.name}
@@ -84,7 +85,6 @@ export default function ProfilePage() {
 
 							<TextInput
 								label="Details"
-								aria-label="Details"
 								description="Physical description, cosplay character, furry species, etc."
 								value={payload.details}
 								onChangeText={(text) => setPayload((p) => void (p.details = text))}
@@ -92,7 +92,7 @@ export default function ProfilePage() {
 							/>
 
 							<Box>
-								<Text fz={FontSize.md} fw="bold">
+								<Text fz={FontSize.md} role="heading" fw="bold">
 									Socials
 								</Text>
 								<Text fz={FontSize.sm} c={Colors.TextDimmed}>
@@ -106,7 +106,6 @@ export default function ProfilePage() {
 									<TextInput
 										leftSection={<Icon size={IconSize.sm} color={Colors.TextDimmed} />}
 										label={title}
-										aria-label={title}
 										value={payload?.socials[key] ?? ""}
 										autoCapitalize="none"
 										autoComplete="off"
