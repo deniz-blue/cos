@@ -1,5 +1,9 @@
-import { useCallback, useId, useState, type ReactNode } from "react";
-import { TextInput as RNTextInput, type TextInputProps as RNTextInputProps } from "react-native";
+import { useCallback, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+	Pressable,
+	TextInput as RNTextInput,
+	type TextInputProps as RNTextInputProps,
+} from "react-native";
 import { Colors } from "../../../theme/colors";
 import { ControlHeight, FontSize } from "../../../theme/sizing";
 import { Spacing } from "../../../theme/spacing";
@@ -16,7 +20,7 @@ const INPUT_SIZES = {
 export interface TextInputProps
 	extends
 		Omit<RNTextInputProps, "placeholderTextColor">,
-		Pick<InputWrapperProps, "label" | "description" | "error" | "required"> {
+		Pick<InputWrapperProps, "label" | "description" | "error"> {
 	size?: keyof typeof INPUT_SIZES;
 	leftSection?: ReactNode;
 	rightSection?: ReactNode;
@@ -27,7 +31,6 @@ export const TextInput = ({
 	label,
 	description,
 	error,
-	required,
 	size = "md",
 	leftSection,
 	rightSection,
@@ -35,9 +38,10 @@ export const TextInput = ({
 	baseProps: { style: baseStyle, ...baseProps } = {},
 	...rest
 }: TextInputProps) => {
-	const id = useId();
+	const id = useMemo(() => Math.random().toString(36).slice(2), []);
 	const inputSize = INPUT_SIZES[size];
 	const [focused, setFocused] = useState(false);
+	const ref = useRef<RNTextInput | null>(null);
 
 	const handleFocus = useCallback(
 		(e: any) => {
@@ -58,6 +62,7 @@ export const TextInput = ({
 	const input = (
 		<RNTextInput
 			placeholderTextColor={Colors.TextDimmed}
+			ref={ref}
 			style={[
 				{
 					flex: 1,
@@ -68,6 +73,7 @@ export const TextInput = ({
 					fontSize: inputSize.fz,
 					fontFamily: "Lexend",
 					outlineWidth: 0,
+					outlineColor: "transparent",
 				},
 				style,
 			]}
@@ -75,8 +81,8 @@ export const TextInput = ({
 			onFocus={handleFocus}
 			onBlur={handleBlur}
 			accessibilityLabelledBy={id}
-			accessibilityLabel={typeof label === "string" ? label : undefined}
-			accessibilityHint={typeof description === "string" ? description : undefined}
+			aria-labelledby={id}
+			maxLength={/* 64kb fallback */ 65536}
 		/>
 	);
 
@@ -85,14 +91,14 @@ export const TextInput = ({
 			label={label}
 			description={description}
 			error={error}
-			required={required}
-			labelProps={{ accessible: false, importantForAccessibility: "no" }}
-			descriptionProps={{ accessible: false, importantForAccessibility: "no" }}
-			wrapperProps={
-				description ? { accessible: true } : { importantForAccessibility: "no", accessible: false }
-			}
+			wrapperProps={{
+				accessible: true,
+				nativeID: id,
+				id,
+			}}
 		>
-			<InputBase
+			<InputBase<typeof Pressable>
+				component={Pressable}
 				focused={focused}
 				size={size}
 				gap={leftSection || rightSection ? Spacing.sm : undefined}
@@ -104,7 +110,8 @@ export const TextInput = ({
 					},
 					baseStyle,
 				]}
-				maxLength={/* 64kb fallback */ 65536}
+				onPress={() => ref.current?.focus()}
+				tabIndex={-1}
 				{...baseProps}
 			>
 				{leftSection}

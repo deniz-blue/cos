@@ -45,8 +45,8 @@ export default function ProfilePage() {
 	);
 
 	return (
-		<KeyboardAvoidingView behavior="padding">
-			<ScrollView>
+		<ScrollView style={{ flex: 1 }}>
+			<KeyboardAvoidingView behavior="padding">
 				<Box direction="column" align="stretch" justify="center" p="md" gap="md">
 					<Box align="center" direction="row" gap="xs">
 						<ButtonBase onPress={() => router.push("..")} aria-label="Back">
@@ -122,7 +122,7 @@ export default function ProfilePage() {
 
 					<Box h={200} />
 				</Box>
-			</ScrollView>
-		</KeyboardAvoidingView>
+			</KeyboardAvoidingView>
+		</ScrollView>
 	);
 }

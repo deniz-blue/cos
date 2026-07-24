@@ -26,11 +26,13 @@ const Palette = {
 
 	Red7: "#f03e3e",
 	Red8: "#e03131",
+
+	Black: "#000000",
 };
 
 export const Colors = {
 	...Palette,
-	Background: Palette.Dark7,
+	Background: Palette.Black,
 	BackgroundLight: Palette.Dark6,
 	BackgroundInput: Palette.Dark6,
 	Primary: Palette.Grape7,

@@ -59,8 +59,12 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
 	const ref = useRef<TrueSheet | null>(null);
 	const date = new Date(item.created_at).toLocaleString();
 
+	const handlePress = () => {
+		ref.current?.present();
+	};
+
 	return (
-		<ButtonBase onPress={() => ref.current?.present()} role="listitem">
+		<ButtonBase onPress={handlePress} role="listitem" tabIndex={0}>
 			<Card>
 				<Box>
 					<Box direction="column" gap={0}>
@@ -71,7 +75,7 @@ const ListItemCard = ({ item }: { item: ListItem }) => {
 							<Box direction="row">
 								{Object.entries(item.payload.socials).map(([k]) => {
 									const { icon: Icon } = KnownSocials[k];
-									return <Icon key={k} size={IconSize.xs} color={Colors.Text} />;
+									return <Icon aria-hidden key={k} size={IconSize.xs} color={Colors.Text} />;
 								})}
 							</Box>
 						</Box>

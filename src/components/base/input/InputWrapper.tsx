@@ -8,7 +8,6 @@ export interface InputWrapperProps {
 	label?: ReactNode;
 	description?: ReactNode;
 	error?: ReactNode;
-	required?: boolean;
 	labelProps?: Omit<TextProps, "children">;
 	descriptionProps?: Omit<TextProps, "children">;
 	wrapperProps?: Omit<BoxProps, "children">;
@@ -20,7 +19,6 @@ export const InputWrapper = ({
 	label,
 	description,
 	error,
-	required,
 	labelProps,
 	descriptionProps,
 	errorProps,
@@ -30,7 +28,6 @@ export const InputWrapper = ({
 	const labelNode = label && (
 		<Text fz={FontSize.sm} fw="bold" {...labelProps}>
 			{label}
-			{required && <Text style={{ color: Colors.Red }}>{" *"}</Text>}
 		</Text>
 	);
 

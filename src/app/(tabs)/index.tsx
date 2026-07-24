@@ -49,7 +49,7 @@ export default function QrPage() {
 							h="100%"
 							style={{ backgroundColor: "#ffffff", alignItems: "center", justifyContent: "center" }}
 						>
-							{qrSize > 0 && <QRCode value={qrcode} size={qrSize} />}
+							{qrSize > 0 && <QRCode aria-hidden value={qrcode} size={qrSize} />}
 						</Box>
 
 						{profile.isPending && (
@@ -95,7 +95,7 @@ export default function QrPage() {
 							)}
 							<Button
 								variant="primary"
-								leftSection={<IconPencil size={18} color={Colors.White} />}
+								leftSection={<IconPencil aria-hidden size={IconSize.sm} color={Colors.White} />}
 								onPress={() => router.push("/(tabs)/profile")}
 							>
 								{hasData ? "Edit details" : "Add details"}
@@ -114,9 +114,10 @@ export default function QrPage() {
 			</ScrollView>
 
 			<Fab
-				icon={<IconZoomScan size={IconSize.lg} color={Colors.White} />}
+				icon={<IconZoomScan aria-hidden size={IconSize.lg} color={Colors.White} />}
 				label="Scan QR Code"
 				onPress={() => router.push("/camera")}
+				accessibilityHint="Opens QR code scanner screen to continiously scan QR codes"
 			/>
 		</Box>
 	);

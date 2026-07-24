@@ -9,21 +9,21 @@ export default function TabsLayout() {
 				name="index"
 				options={{
 					title: "QR Code",
-					tabBarIcon: ({ color, size }) => <IconQrcode size={size} color={color} />,
+					tabBarIcon: ({ color, size }) => <IconQrcode aria-hidden size={size} color={color} />,
 				}}
 			/>
 			<Tabs.Screen
 				name="list"
 				options={{
 					title: "History",
-					tabBarIcon: ({ color, size }) => <IconList size={size} color={color} />,
+					tabBarIcon: ({ color, size }) => <IconList aria-hidden size={size} color={color} />,
 				}}
 			/>
 			<Tabs.Screen
 				name="profile"
 				options={{
 					title: "Profile",
-					tabBarIcon: ({ color, size }) => <IconUser size={size} color={color} />,
+					tabBarIcon: ({ color, size }) => <IconUser aria-hidden size={size} color={color} />,
 				}}
 			/>
 		</Tabs>

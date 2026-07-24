@@ -19,7 +19,6 @@ const SIZE_STYLES = {
 	sm: { h: ControlHeight.sm, ph: Spacing.sm, fz: FontSize.xs },
 	md: { h: ControlHeight.md, ph: Spacing.sm, fz: FontSize.sm },
 	lg: { h: ControlHeight.lg, ph: Spacing.md, fz: FontSize.md },
-	xl: { h: ControlHeight.xl, ph: Spacing.md, fz: FontSize.lg },
 } satisfies Record<string, { h: number; ph: number; fz: number }>;
 
 export interface ButtonProps extends BoxProps, Omit<PressableProps, "children" | "style"> {

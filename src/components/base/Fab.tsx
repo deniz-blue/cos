@@ -24,7 +24,7 @@ export const Fab = ({ icon, label, onPress, style, ...rest }: FabProps) => {
 				<Button
 					onPress={onPress}
 					radius={16}
-					size="xl"
+					size="lg"
 					variant="primary"
 					direction="row"
 					align="center"

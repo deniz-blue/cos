@@ -10,10 +10,9 @@ export const IconSize = {
 
 export type ThemeControlHeight = keyof typeof ControlHeight;
 export const ControlHeight = {
-	sm: 28,
-	md: 34,
-	lg: 42,
-	xl: 50,
+	sm: 32,
+	md: 36,
+	lg: 56,
 } as const;
 
 export type ThemeFont = keyof typeof Font;
@@ -28,7 +27,7 @@ export const FontSize = {
 	md: 16,
 	lg: 18,
 	xl: 20,
-	h1: 20,
+	h1: 24,
 } as const;
 
 export type ThemeRadius = keyof typeof Radius;

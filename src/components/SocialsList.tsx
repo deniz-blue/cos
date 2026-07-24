@@ -84,7 +84,7 @@ const SocialItem = ({ k, v }: SocialItemProps) => {
 			}}
 		>
 			<Box direction="row" align="center" p="sm" radius={8} bg={Colors.Dark7}>
-				<Icon size={IconSize.md} color={Colors.Text} />
+				<Icon aria-hidden size={IconSize.md} color={Colors.Text} />
 				<Box direction="row" flex={1} justify="space-between" align="center" ml="sm">
 					<Text fz={FontSize.sm} c={Colors.Text}>
 						{social.title}
