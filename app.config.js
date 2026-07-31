@@ -1,7 +1,7 @@
 const DEV = process.env.APP_VARIANT === "development";
 
-const version = "1.0.5";
-const versionCode = 5;
+const version = "1.1.0";
+const versionCode = 6;
 
 const blockedPermissions = [
 	"android.permission.INTERNET",
