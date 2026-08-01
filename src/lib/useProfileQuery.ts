@@ -9,7 +9,9 @@ export const useProfileQuery = () => {
 	return useQuery({
 		queryKey: profileQueryKey(),
 		queryFn: async () => {
-			return await AsyncStorage.getItem("profile").then(s => s ? (JSON.parse(s) as Payload) : null);
+			return await AsyncStorage.getItem("profile").then((s) =>
+				s ? (JSON.parse(s) as Payload) : null,
+			);
 		},
 	});
 };
@@ -25,5 +27,5 @@ export const useProfileMutation = () => {
 		onError: (err) => {
 			console.error("Failed to save profile", err);
 		},
-	})
+	});
 };

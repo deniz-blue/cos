@@ -5,11 +5,12 @@ import { uid } from "./uid";
 import { queryClient } from "./query-client";
 import { ListItem } from "./useListQuery";
 
-export interface NewListItem extends Omit<ListItem, "id" | "created_at"> { };
-export interface UpdateListItem extends Pick<ListItem, "id">, Partial<Omit<ListItem, "id" | "created_at">> { };
+export interface NewListItem extends Omit<ListItem, "id" | "created_at"> {}
+export interface UpdateListItem
+	extends Pick<ListItem, "id">, Partial<Omit<ListItem, "id" | "created_at">> {}
 
 export const getAll = async (): Promise<ListItem[]> => {
-	const result = await AsyncStorage.getItem("list") || "[]";
+	const result = (await AsyncStorage.getItem("list")) || "[]";
 	return JSON.parse(result) as ListItem[];
 };
 
@@ -18,7 +19,9 @@ export type AddResult = { id: string; type: "added" } | { id: string; type: "exi
 export const addToList = async (item: NewListItem): Promise<AddResult> => {
 	const all = await getAll();
 
-	const existing = all.find(existingItem => serializePayload(existingItem.payload) === serializePayload(item.payload));
+	const existing = all.find(
+		(existingItem) => serializePayload(existingItem.payload) === serializePayload(item.payload),
+	);
 
 	if (existing) return { id: existing.id, type: "exists" };
 
@@ -35,7 +38,7 @@ export const addToList = async (item: NewListItem): Promise<AddResult> => {
 
 export const updateListItem = async (item: UpdateListItem): Promise<void> => {
 	const all = await getAll();
-	const index = all.findIndex(existingItem => existingItem.id === item.id);
+	const index = all.findIndex((existingItem) => existingItem.id === item.id);
 	if (index === -1) throw new Error("Item not found");
 
 	const updatedItem = {
@@ -49,13 +52,18 @@ export const updateListItem = async (item: UpdateListItem): Promise<void> => {
 
 export const deleteListItem = async (id: string): Promise<void> => {
 	const all = await getAll();
-	const updatedList = all.filter(item => item.id !== id);
+	const updatedList = all.filter((item) => item.id !== id);
 	await AsyncStorage.setItem("list", JSON.stringify(updatedList));
 };
 
 export const useListMutation = () => {
 	return useMutation({
-		mutationFn: async (data: { type: "add"; item: NewListItem } | { type: "update"; item: UpdateListItem } | { type: "delete"; id: string }) => {
+		mutationFn: async (
+			data:
+				| { type: "add"; item: NewListItem }
+				| { type: "update"; item: UpdateListItem }
+				| { type: "delete"; id: string },
+		) => {
 			switch (data.type) {
 				case "add":
 					return await addToList(data.item);
@@ -72,4 +80,4 @@ export const useListMutation = () => {
 			await queryClient.invalidateQueries({ queryKey: ["items"] });
 		},
 	});
-}
+};

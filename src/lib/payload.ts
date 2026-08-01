@@ -71,13 +71,13 @@ export const serializePayload = (payload: Payload): string => {
 		"#" +
 		[
 			"0",
-			encodeURIComponent(payload.name),
+			encodeURIComponent(payload.name || ""),
 			Object.entries(payload.socials)
 				.filter(([, v]) => !!v)
 				.sort(([k1], [k2]) => k1.localeCompare(k2))
-				.map(([k, v]) => `${k}:${encodeURIComponent(v)}`)
+				.map(([k, v]) => `${encodeURIComponent(k)}:${encodeURIComponent(v)}`)
 				.join(","),
-			encodeURIComponent(payload.details),
+			encodeURIComponent(payload.details || ""),
 		].join("|")
 	);
 };

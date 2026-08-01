@@ -7,10 +7,10 @@ export interface ListItem {
 	payload: Payload;
 	note: string;
 	created_at: number;
-};
+}
 
 export const fetchList = async (): Promise<ListItem[]> => {
-	const result = await AsyncStorage.getItem("list") || "[]";
+	const result = (await AsyncStorage.getItem("list")) || "[]";
 	return JSON.parse(result);
 };
 

@@ -2,9 +2,10 @@ import { IconArrowLeft } from "@tabler/icons-react-native";
 import { useRouter } from "expo-router";
 import { Draft, produce } from "immer";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { KeyboardAvoidingView, ScrollView } from "react-native";
+import { KeyboardAvoidingView, Linking, ScrollView } from "react-native";
 import { Box } from "../../components/base/Box";
 import { ButtonBase } from "../../components/base/ButtonBase";
+import { InputWrapper } from "../../components/base/input/InputWrapper";
 import { TextInput } from "../../components/base/input/TextInput";
 import { Loader } from "../../components/base/Loader";
 import { Text } from "../../components/base/Text";
@@ -77,7 +78,6 @@ export default function ProfilePage() {
 							<TextInput
 								label="Name"
 								description="Enter your name"
-								required
 								value={payload.name}
 								onChangeText={(text) => setPayload((p) => void (p.name = text))}
 								maxLength={128}
@@ -85,7 +85,7 @@ export default function ProfilePage() {
 
 							<TextInput
 								label="Details"
-								description="Physical description, cosplay character, furry species, etc."
+								description="Physical description, cosplay character, furry species and color, etc."
 								value={payload.details}
 								onChangeText={(text) => setPayload((p) => void (p.details = text))}
 								maxLength={128}
@@ -119,6 +119,23 @@ export default function ProfilePage() {
 							))}
 						</Box>
 					)}
+
+					<Box mt="xl">
+						<InputWrapper label="About App" />
+						<Text fz={FontSize.sm} c={Colors.TextDimmed}>
+							Application made with ❤️ by deniz.blue
+						</Text>
+						<Box direction="row" gap={0}>
+							<Text fz={FontSize.sm} c={Colors.TextDimmed}>
+								You can find the source code on{" "}
+							</Text>
+							<ButtonBase onPress={() => Linking.openURL("https://github.com/deniz-blue/cos")}>
+								<Text fz={FontSize.sm} c={Colors.Blue}>
+									GitHub
+								</Text>
+							</ButtonBase>
+						</Box>
+					</Box>
 
 					<Box h={200} />
 				</Box>

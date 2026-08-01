@@ -43,32 +43,28 @@ export const ProgressBar = () => {
 		setWidth(e.nativeEvent.layout.width);
 	};
 
-	const progressBarStyle = width > 0 ? {
-		transform: [
-			{
-				translateX: timer.interpolate({
-					inputRange: [0, 0.5, 1],
-					outputRange: [
-						-0.5 * width,
-						-0.5 * INDETERMINATE_MAX_WIDTH * width,
-						0.7 * width,
+	const progressBarStyle =
+		width > 0
+			? {
+					transform: [
+						{
+							translateX: timer.interpolate({
+								inputRange: [0, 0.5, 1],
+								outputRange: [-0.5 * width, -0.5 * INDETERMINATE_MAX_WIDTH * width, 0.7 * width],
+							}),
+						},
+						{
+							scaleX: timer.interpolate({
+								inputRange: [0, 0.5, 1],
+								outputRange: [0.0001, INDETERMINATE_MAX_WIDTH, 0.0001],
+							}),
+						},
 					],
-				}),
-			},
-			{
-				scaleX: timer.interpolate({
-					inputRange: [0, 0.5, 1],
-					outputRange: [0.0001, INDETERMINATE_MAX_WIDTH, 0.0001],
-				}),
-			},
-		],
-	} : {};
+				}
+			: {};
 
 	return (
-		<View
-			onLayout={onLayout}
-			style={{ width: "100%" }}
-		>
+		<View onLayout={onLayout} style={{ width: "100%" }}>
 			<Animated.View
 				style={[
 					containerStyle,

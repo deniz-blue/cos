@@ -35,6 +35,7 @@ export const TextInput = ({
 	leftSection,
 	rightSection,
 	style,
+	maxLength,
 	baseProps: { style: baseStyle, ...baseProps } = {},
 	...rest
 }: TextInputProps) => {
@@ -77,12 +78,12 @@ export const TextInput = ({
 				},
 				style,
 			]}
+			accessibilityLabelledBy={id}
+			aria-labelledby={id}
 			{...rest}
 			onFocus={handleFocus}
 			onBlur={handleBlur}
-			accessibilityLabelledBy={id}
-			aria-labelledby={id}
-			maxLength={/* 64kb fallback */ 65536}
+			maxLength={maxLength ?? /* 64kb fallback */ 65536}
 		/>
 	);
 

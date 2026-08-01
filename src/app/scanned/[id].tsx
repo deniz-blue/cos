@@ -5,7 +5,7 @@ import {
 	IconZoomScan,
 } from "@tabler/icons-react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Platform, ScrollView } from "react-native";
+import { Linking, Platform, ScrollView } from "react-native";
 import { Box } from "../../components/base/Box";
 import { Button } from "../../components/base/button/Button";
 import { Loader } from "../../components/base/Loader";
@@ -85,12 +85,17 @@ export default function ScannedProfilePage() {
 							variant="subtle"
 							leftSection={<IconExternalLink size={18} color={Colors.Primary} />}
 							onPress={() => {
-								const appUrl = serializePayload(item.payload);
-								const playStoreUrl = "https://play.google.com/store/apps/details?id=lt.tsx.cos";
-								window.location.href = appUrl;
-								setTimeout(() => {
-									window.location.href = playStoreUrl;
-								}, 2000);
+								const packageName = "lt.tsx.cos";
+								const appScheme = "cos";
+
+								const payload = serializePayload(item.payload);
+
+								const playStoreUrl = `https://play.google.com/store/apps/details?id=${packageName}`;
+								const encodedFallback = encodeURIComponent(playStoreUrl);
+
+								const intentUri = `intent://#${payload}#Intent;scheme=${appScheme};package=${packageName};S.browser_fallback_url=${encodedFallback};end`;
+
+								Linking.openURL(intentUri);
 							}}
 						>
 							Open in app

@@ -31,6 +31,3 @@ The second tab in the app is your history. It shows all the QR codes/profiles yo
 **Add Custom Notes**
 
 Custom notes allow you to not forget who is who. After scanning, you can quickly add a note to view for later.
-
-
-

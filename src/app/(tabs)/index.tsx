@@ -105,7 +105,8 @@ export default function QrPage() {
 
 					<Box align="center" justify="center">
 						<Text fz={FontSize.sm} c={Colors.TextDimmed} ta="center">
-							This app allows you to use QR codes to share your social media usernames to people you meet without hassle.
+							This app allows you to use QR codes to share your social media usernames to people you
+							meet without hassle.
 							{"\n"}
 							Scan QR codes of people you meet which will be saved to your history to view later.
 						</Text>

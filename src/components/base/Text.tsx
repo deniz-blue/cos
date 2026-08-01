@@ -16,18 +16,7 @@ export interface TextProps extends RNTextProps {
 }
 
 export const Text = (props: TextProps) => {
-	const {
-		c,
-		fz,
-		fw,
-		fst,
-		ta,
-		tt,
-		tdl,
-		lh,
-		style,
-		...rest
-	} = props;
+	const { c, fz, fw, fst, ta, tt, tdl, lh, style, ...rest } = props;
 
 	if (!rest.children) return null;
 
