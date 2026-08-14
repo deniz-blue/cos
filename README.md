@@ -1,33 +1,70 @@
-# Cos
+# CosQR
 
-Cos is a social media contact sharing app via QR codes. It's intended for use in large events such as furry/cosplay conventions.
+A tool for sharing social media usernames/contacts with others (potentially during large events such as furry or cosplay conventions) using QR codes.
 
 ## How it works
 
-**Setup**
+**Installation**
 
-1. Download the app on Google Play Store (pending as of 05-07-2026) or open the web application on https://cos.tsx.lt (requires internet)
-2. Set up your profile details through the**Edit Profile** button/tab. Enter your name, anything differentiating about your appearance and your social media usernames.
-3. Done! Thats all.
+1. You must either [Install the app on Google Play Store](https://play.google.com/store/apps/details?id=lt.tsx.cos) or [use the web version](https://cos.tsx.lt)
+2. Edit your details in the Profile page.
 
-This app absolutely does not use any internet connectivity, outside the case when you do not have the application installed in which case you would be using the web application.
+**Works without Internet\***
 
-**Scanning others' QR codes**
+\* Except when the person scanning the QR code doesn't have the app, in which case they will fall back to the [web version](https://cos.tsx.lt)
 
-Either use the app's "**Scan QR Code**" button on the right bottom corner for scanning multiple QR codes in quick succession, or scan using any other QR code scanner, such as your built-in system Camera application. Scanning outside the Cos app works; if the app is installed, the app will open. If you do not have the app installed, the web application will open in your default browser.
+**Scanned QR Codes Persist**
 
-Any scanned QR codes will persist in your **history**. Once you scan, you can return to your history at the end of the day or when you are not busy.
+Any scanned QR codes will persist in your **History**. You can return to the History tab later.
 
-On the app's **Scan QR Code** screen, you can scan many QR codes in quick succession. Any scanned QR codes will display a small message in the bottom with a button to add/edit a **custom note** for this person.
+**Scanning QR Codes**
 
-**Letting others scan your QR code**
-
-Simply open the app! The main screen already displays your QR code.
-
-**View previously scanned QR codes**
-
-The second tab in the app is your history. It shows all the QR codes/profiles you scanned using the app. You can view their social media usernames and click them to open them in the relevant apps immediately.
+You can either:
+- Use the app's dedicated QR code scanner to scan many in quick succession or
+- Use any app (such as your system camera) that can scan QR codes - which will ultimately open the app.
 
 **Add Custom Notes**
 
-Custom notes allow you to not forget who is who. After scanning, you can quickly add a note to view for later.
+While using the dedicated QR code scanner or viewing your history, you can add a custom note to attach relevant context about the person you have met.
+
+---
+
+## QR Code Data Model
+
+The QR codes are versioned and always start with the app's domain: `https://cos.tsx.lt/`
+
+The `hash` segment of the URL is used for the payload. The payload is prefixed with the format version (which is currently `0`).
+
+The current payload has the following structure
+
+```
+Payload ::= Name "|" Socials "|" Details
+
+Name    ::= Text
+Details ::= Text
+Socials ::= (Entry ( "," Entry )* )?
+Entry   ::= Key ":" Value
+Key     ::= Text
+Value   ::= Text
+
+Text    ::= Char*
+Char    ::= [^|,:]
+```
+
+Example: `https://cos.tsx.lt/#0deniz|d:deniz.blue,b:deniz.blue|the%20meower`
+
+Socials use a pre-defined dictionary format. The key is a one or two letter identifier and the value is the social media username/identifier.
+
+| Key | Platform | Notes |
+|---|---|---|
+| `d` | Discord | Copies |
+| `i` | Instagram |  |
+| `tg` | Telegram |  |
+| `s` | Signal |  |
+| `m` | Matrix |  |
+| `tt` | TikTok |  |
+| `x` | X (or Twitter) |  |
+| `b` | BlueSky |  |
+| `t` | Tumblr |  |
+| `l` | LinkTree |  |
+
