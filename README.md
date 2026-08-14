@@ -53,6 +53,8 @@ Char    ::= [^|,:]
 
 Example: `https://cos.tsx.lt/#0deniz|d:deniz.blue,b:deniz.blue|the%20meower`
 
+Any `Text` in the payload is URL encoded (`|`, `:`, `,` are kept as-is)
+
 Socials use a pre-defined dictionary format. The key is a one or two letter identifier and the value is the social media username/identifier.
 
 | Key | Platform | Notes |
